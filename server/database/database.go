@@ -24,7 +24,12 @@ func WithDatabase(dbCoords DBConnection, fn func(map[string]*sql.Stmt)) {
 		PERSON_UPDATE,
 		PERSON_DELETE,
 		PERSON_LOOKUP_BY_ID,
-		PERSON_LOOKUP_BY_EMAIL}
+		PERSON_LOOKUP_BY_EMAIL,
+		SESSION_INSERT,
+		SESSION_UPDATE,
+		SESSION_CLEANUP,
+		SESSION_LOOKUP_BY_CODE,
+		SESSION_LOOKUP_BY_ACCOUNT}
 
 	sslMode := "disable"
 	if dbCoords.SSLMode {
