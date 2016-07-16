@@ -81,3 +81,37 @@ func LookupPerson(stmt *sql.Stmt, param string) (*PERSON, error) {
 
 	return result, nil
 }
+
+func (p *PERSON) LookupSessions(stmt *sql.Stmt) ([]*SESSION, error) {
+	results := make([]*SESSION, 0)
+
+	rows, err := stmt.Query(p.Id)
+	if err != nil {
+		return results, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			id, session_code                          sql.NullString
+			verified                                  sql.NullBool
+			date_created, date_verified, date_expires pq.NullTime
+		)
+		err := rows.Scan(&id, &session_code, &date_created, &verified, &date_verified, &date_expires)
+		if err != nil {
+			return results, err
+		} else {
+			result := new(SESSION)
+			result.PersonId = p.Id
+			result.Id = id.String
+			result.Code = session_code.String
+			result.DateCreated = date_created.Time
+			result.Verified = verified.Bool
+			result.DateVerified = date_verified.Time
+			result.DateExpires = date_expires.Time
+			results = append(results, result)
+		}
+	}
+
+	return results, nil
+}
