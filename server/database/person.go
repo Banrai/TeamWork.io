@@ -115,3 +115,38 @@ func (p *PERSON) LookupSessions(stmt *sql.Stmt) ([]*SESSION, error) {
 
 	return results, nil
 }
+
+func (p *PERSON) LookupPublicKeys(stmt *sql.Stmt) ([]*PUBLIC_KEY, error) {
+	results := make([]*PUBLIC_KEY, 0)
+
+	rows, err := stmt.Query(p.Id)
+	if err != nil {
+		return results, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			id, public_key, nickname, source sql.NullString
+			date_added                       pq.NullTime
+		)
+		err := rows.Scan(&id, &public_key, &date_added, &nickname, &source)
+		if err != nil {
+			return results, err
+		} else {
+			result := new(PUBLIC_KEY)
+			result.Id = id.String
+			result.Key = public_key.String
+			result.Added = date_added.Time
+			if nickname.Valid {
+				result.Nickname = nickname.String
+			}
+			if source.Valid {
+				result.Source = source.String
+			}
+			results = append(results, result)
+		}
+	}
+
+	return results, nil
+}

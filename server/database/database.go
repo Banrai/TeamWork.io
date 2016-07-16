@@ -29,7 +29,11 @@ func WithDatabase(dbCoords DBConnection, fn func(map[string]*sql.Stmt)) {
 		SESSION_UPDATE,
 		SESSION_CLEANUP,
 		SESSION_LOOKUP_BY_CODE,
-		SESSION_LOOKUP_BY_ACCOUNT}
+		SESSION_LOOKUP_BY_ACCOUNT,
+		PK_INSERT,
+		PK_UPDATE,
+		PK_DELETE,
+		PK_LOOKUP}
 
 	sslMode := "disable"
 	if dbCoords.SSLMode {
