@@ -20,20 +20,11 @@ type DBConnection struct {
 // Connect to the database with the given coordinates, and invoke the
 // function, which gets passed a map of all the prepared statements
 func WithDatabase(dbCoords DBConnection, fn func(map[string]*sql.Stmt)) {
-	preparedStatements := []string{ACCOUNT_INSERT,
-		ACCOUNT_UPDATE,
-		ACCOUNT_DELETE,
-		ACCOUNT_LOOKUP_BY_ID,
-		ACCOUNT_LOOKUP_BY_EMAIL,
-		SESSION_INSERT,
-		SESSION_UPDATE,
-		SESSION_CLEANUP,
-		SESSION_LOOKUP_BY_CODE,
-		SESSION_LOOKUP_BY_ACCOUNT,
-		PK_INSERT,
-		PK_UPDATE,
-		PK_DELETE,
-		PK_LOOKUP}
+	preparedStatements := []string{PERSON_INSERT,
+		PERSON_UPDATE,
+		PERSON_DELETE,
+		PERSON_LOOKUP_BY_ID,
+		PERSON_LOOKUP_BY_EMAIL}
 
 	sslMode := "disable"
 	if dbCoords.SSLMode {
