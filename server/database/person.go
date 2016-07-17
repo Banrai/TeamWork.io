@@ -150,3 +150,44 @@ func (p *PERSON) LookupPublicKeys(stmt *sql.Stmt) ([]*PUBLIC_KEY, error) {
 
 	return results, nil
 }
+
+func (p *PERSON) LookupMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
+	results := make([]*SESSION, 0)
+
+	rows, err := stmt.Query(p.Id)
+	if err != nil {
+		return results, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			id, message               sql.NullString
+			date_posted, date_expires pq.NullTime
+		)
+		err := rows.Scan(&id, &message, &date_posted, &date_expires)
+		if err != nil {
+			return results, err
+		} else {
+			result := new(MESSAGE)
+			result.PersonId = p.Id
+			result.Id = id.String
+			result.Message = message.String
+			result.DatePosted = date_posted.Time
+			result.DateExpires = date_expires.Time
+			results = append(results, result)
+		}
+	}
+
+	return results, nil
+}
+
+// Return a list of messages originated by this peron
+func (p *PERSON) LookupAuthoredMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
+	return p.LookupMessages(stmt)
+}
+
+// Return a list of messages in which this person was a recipient
+func (p *PERSON) LookupRecipientMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
+	return p.LookupMessages(stmt)
+}
