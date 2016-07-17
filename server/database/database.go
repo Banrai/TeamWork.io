@@ -33,7 +33,16 @@ func WithDatabase(dbCoords DBConnection, fn func(map[string]*sql.Stmt)) {
 		PK_INSERT,
 		PK_UPDATE,
 		PK_DELETE,
-		PK_LOOKUP}
+		PK_LOOKUP,
+		MESSAGE_INSERT,
+		MESSAGE_DELETE,
+		MESSAGE_CLEANUP,
+		RECIPIENT_INSERT,
+		RECIPIENT_DELETE,
+		RECIPIENT_CLEANUP,
+		MESSAGES_BY_AUTHOR,
+		MESSAGES_BY_RECIPIENT,
+		RECIPIENTS_BY_MESSAGE}
 
 	sslMode := "disable"
 	if dbCoords.SSLMode {
