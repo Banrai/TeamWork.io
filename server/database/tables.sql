@@ -31,7 +31,7 @@ CREATE TABLE message (
 CREATE TABLE message_recipient (
 	id           uuid primary key DEFAULT uuid_generate_v4(),
 	message_id   uuid references message(id),
-	person_id     uuid references person(id),
+	person_id    uuid references person(id),
 	UNIQUE(message_id, person_id)
 );
 
