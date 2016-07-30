@@ -152,7 +152,7 @@ func (p *PERSON) LookupPublicKeys(stmt *sql.Stmt) ([]*PUBLIC_KEY, error) {
 }
 
 func (p *PERSON) LookupMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
-	results := make([]*SESSION, 0)
+	results := make([]*MESSAGE, 0)
 
 	rows, err := stmt.Query(p.Id)
 	if err != nil {

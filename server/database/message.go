@@ -5,7 +5,6 @@ package database
 
 import (
 	"database/sql"
-	"github.com/lib/pq"
 	"time"
 )
 
@@ -56,7 +55,7 @@ func (m *MESSAGE) AddRecipients(stmt *sql.Stmt, recipients []*PERSON) []error {
 	return m.ProcessRecipients(stmt, recipients)
 }
 
-func (m *MESSAGE) Delete(stmt *sql.Stmt) []error {
+func (m *MESSAGE) Delete(stmt *sql.Stmt) error {
 	_, err := stmt.Exec(m.Id)
 
 	return err
@@ -70,7 +69,7 @@ func (m *MESSAGE) DeleteRecipients(stmt *sql.Stmt, recipients []*PERSON) []error
 func ExpiredMessages(stmt *sql.Stmt) ([]string, error) {
 	results := make([]string, 0)
 
-	rows, err := stmt.Exec()
+	rows, err := stmt.Query()
 	if err != nil {
 		return results, err
 	}
