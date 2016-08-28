@@ -22,8 +22,8 @@ const (
 	SESSION_CLEANUP = "delete from session where date_expires <= (now() at time zone 'UTC')"
 
 	// session lookup
-	SESSION_LOOKUP_BY_CODE    = "select id, person_id, date_created, verified, date_verified, date_expires from session where session_code = $1"
-	SESSION_LOOKUP_BY_ACCOUNT = "select id, session_code, date_created, verified, date_verified, date_expires from session where person_id = $1"
+	SESSION_LOOKUP_BY_CODE   = "select id, person_id, date_created, verified, date_verified, date_expires from session where session_code = $1"
+	SESSION_LOOKUP_BY_PERSON = "select id, session_code, date_created, verified, date_verified, date_expires from session where person_id = $1"
 )
 
 type SESSION struct {
