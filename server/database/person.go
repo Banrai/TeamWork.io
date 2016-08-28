@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"github.com/lib/pq"
 	"time"
+	"strings"
 )
 
 const (
@@ -31,7 +32,7 @@ type PERSON struct {
 
 func (p *PERSON) Add(stmt *sql.Stmt) (string, error) {
 	var id sql.NullString
-	err := stmt.QueryRow(p.Email).Scan(&id)
+	err := stmt.QueryRow(strings.ToLower(p.Email)).Scan(&id)
 
 	return id.String, err
 }
@@ -43,7 +44,7 @@ func (p *PERSON) Delete(stmt *sql.Stmt) error {
 }
 
 func (p *PERSON) Update(stmt *sql.Stmt) error {
-	_, err := stmt.Exec(p.Email, p.Verified, p.Enabled, p.Id)
+	_, err := stmt.Exec(strings.ToLower(p.Email), p.Verified, p.Enabled, p.Id)
 
 	return err
 }
