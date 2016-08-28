@@ -19,9 +19,9 @@ const (
 )
 
 type PUBLIC_KEY struct {
-	Id       string    `json:"id"`
+	Id       string    `json:"id,omitempty"`
 	Key      string    `json:"key"`
-	Added    time.Time `json:"date_added"`
+	Added    time.Time `json:"date_added,omitempty"`
 	Nickname string    `json:"name,omitempty"`
 	Source   string    `json:"source,omitempty"`
 }

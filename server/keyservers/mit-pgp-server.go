@@ -19,6 +19,8 @@ import (
 	 http://pgp.mit.edu/
 */
 
+const MIT_SOURCE = "http://pgp.mit.edu/"
+
 // parse the specific key links from a request of the form:
 // http://pgp.mit.edu/pks/lookup?search=me@example.org excluding revoked/not
 // verified keys

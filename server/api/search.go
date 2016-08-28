@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/Banrai/TeamWork.io/server/database"
+	"github.com/Banrai/TeamWork.io/server/keyservers"
 	"net/http"
 	"strings"
 )
@@ -140,20 +141,34 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 			}
 
 			if valid {
+				searchEmail := strings.ToLower(strings.Join(em, ""))
+
 				// see if there any public keys for the given email address already in the db,
 				// based on existing person registrations
-				searchPerson, searchPersonErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], strings.ToLower(strings.Join(em, "")))
-				if searchPersonErr != nil {
-					return
-				}
+				searchPerson, searchPersonErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], searchEmail)
+				if searchPersonErr == nil { //TODO: is this result when lookup by email is not found? confirm
+					// email corresponds to an existing person in the db
+					personKeys, personKeysErr := searchPerson.LookupPublicKeys(stmt[database.PK_LOOKUP])
+					if personKeysErr != nil {
+						return
+					}
 
-				personKeys, personKeysErr := searchPerson.LookupPublicKeys(stmt[database.PK_LOOKUP])
-				if personKeysErr != nil {
-					return
-				}
+					for _, pk := range personKeys {
+						results = append(results, pk)
+					}
+				} else {
+					// see if it exists in the MIT key server
+					keys, keysErr := keyservers.MITSearch(searchEmail)
+					if keysErr != nil {
+						return
+					}
 
-				for _, pk := range personKeys {
-					results = append(results, pk)
+					for _, key := range keys {
+						result := new(database.PUBLIC_KEY)
+						result.Key = key
+						result.Source = keyservers.MIT_SOURCE
+						results = append(results, result)
+					}
 				}
 			}
 		}

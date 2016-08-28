@@ -6,8 +6,8 @@ package database
 import (
 	"database/sql"
 	"github.com/lib/pq"
-	"time"
 	"strings"
+	"time"
 )
 
 const (
