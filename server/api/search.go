@@ -167,6 +167,8 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 						result := new(database.PUBLIC_KEY)
 						result.Key = key
 						result.Source = keyservers.MIT_SOURCE
+
+						// TODO: add the PERSON and each corresponding PUBLIC_KEY to the database w/o blocking
 						results = append(results, result)
 					}
 				}
