@@ -1,0 +1,62 @@
+body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+.post-header {
+    margin: 0.5em;
+    padding: 0.5em;
+}
+
+.post {
+    margin: 0.5em;
+    padding: 0.5em;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+}
+
+.post:hover {
+    background: #f0e68c;
+}
+
+.post:nth-child(even) {
+    background-color: #f3f3f3;
+}
+
+.post:nth-child(even):hover {
+    background-color: #f0e68c;
+}
+
+.datetime {
+  font-size: smaller;
+}
+
+/* file upload button 
+   source: http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/
+ */
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.file-selected {
+    color: #008000;
+}
