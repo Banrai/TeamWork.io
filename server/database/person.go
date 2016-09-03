@@ -192,3 +192,22 @@ func (p *PERSON) LookupAuthoredMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
 func (p *PERSON) LookupRecipientMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
 	return p.LookupMessages(stmt)
 }
+
+// create a new Person in the db, and associate these public keys
+func AddPersonWithKeys(pStmt, pkStmt *sql.Stmt, email string, pkList []*PUBLIC_KEY) error {
+	p := new(PERSON)
+	p.Email = email
+	pId, pErr := p.Add(pStmt)
+	if pErr != nil {
+		return pErr
+	}
+
+	for _, key := range pkList {
+		_, keyErr := key.Add(pkStmt, pId, key.Key, "", key.Source)
+		if keyErr != nil {
+			return keyErr
+		}
+	}
+
+	return nil
+}

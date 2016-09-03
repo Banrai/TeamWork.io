@@ -6,8 +6,10 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"github.com/Banrai/TeamWork.io/server/keyservers"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -168,9 +170,20 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 						result.Key = key
 						result.Source = keyservers.MIT_SOURCE
 
-						// TODO: add the PERSON and each corresponding PUBLIC_KEY to the database w/o blocking
 						results = append(results, result)
 					}
+
+					// add the PERSON and each corresponding PUBLIC_KEY to the database w/o blocking
+					go func() {
+						if len(results) > 0 {
+							log.Println(fmt.Sprintf("AddPersonWithKeys(): %s", searchEmail))
+							err := database.AddPersonWithKeys(stmt[database.PERSON_INSERT], stmt[database.PK_INSERT], searchEmail, results)
+							if err != nil {
+								log.Println(err)
+							}
+						}
+					}()
+
 				}
 			}
 		}
