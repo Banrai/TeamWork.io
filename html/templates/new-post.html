@@ -6,7 +6,7 @@
 
      <!-- navigation -->
      <!-- /navigation -->
-     
+
      <!-- content (outer) -->
      <div class="row">
        <div class="col-xs-1 col-md-1"></div>
@@ -36,7 +36,7 @@
 	       </div>
 	       <div class="form-group">
 		 <textarea class="form-control" rows="3" id="message" name="message" placeholder="Your Message"></textarea>
-		 <p class="help-block">&nbsp;<input id="enc" type="checkbox"> <span style="color: red"><i class="fa fa-lock"></i> Encrypt</span></p>
+		 <p class="help-block"><input id="enc" type="checkbox"> <span style="color: red"><i class="fa fa-lock"></i> Encrypt</span></p>
 	       </div>
 	       <div class="form-group">
 		 <button id="post" type="submit" class="btn btn-success"><i class="fa fa-commenting" aria-hidden="true"></i> Post</button>
@@ -47,7 +47,7 @@
 	   </div>
 	 </div>
 	 <!-- /content (inner) -->
-	 
+
        </div>
      </div>
      <!-- /content (outer) -->
@@ -59,7 +59,7 @@
    </div>
    <!-- /container -->
 
-{{template "scripts.html"}}
+{{template "scripts.html" .}}
    <script src="/js/modal.min.js"></script>
  </body>
 </html>

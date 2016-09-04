@@ -6,12 +6,28 @@ package ui
 import (
 	"fmt"
 	"github.com/Banrai/TeamWork.io/server/database"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"path"
 )
 
-var UNSUPPORTED_TEMPLATE_FILE = "browser_not_supported.html"
+var (
+	TEMPLATE_LIST = func(templatesFolder string, templateFiles []string) []string {
+		t := make([]string, 0)
+		for _, f := range templateFiles {
+			t = append(t, path.Join(templatesFolder, f))
+		}
+		return t
+	}
+
+	UNSUPPORTED_TEMPLATE_FILE = "browser_not_supported.html"
+
+	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "scripts.html"}
+	NEW_POST_TEMPLATE       *template.Template
+
+	TEMPLATES_INITIALIZED = false
+)
 
 // Use this to redirect one request to another target (string)
 func Redirect(target string) http.HandlerFunc {
@@ -42,4 +58,19 @@ func UnsupportedBrowserHandler(templatesFolder string) http.HandlerFunc {
 // handlers for static resources
 func StaticFolder(folder string, templatesFolder string) http.Handler {
 	return http.StripPrefix(fmt.Sprintf("/%s/", folder), http.FileServer(http.Dir(path.Join(templatesFolder, fmt.Sprintf("../%s/", folder)))))
+}
+
+/* HTML template structs */
+
+type NewPostPage struct {
+	Title   string
+	Session *database.SESSION
+	Keys    []*database.PUBLIC_KEY
+}
+
+// InitializeTemplates confirms the given folder string leads to the html
+// template files, otherwise templates.Must() will complain
+func InitializeTemplates(folder string) {
+	NEW_POST_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_POST_TEMPLATE_FILES)...))
+	TEMPLATES_INITIALIZED = true
 }

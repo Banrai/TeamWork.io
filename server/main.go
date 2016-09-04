@@ -62,7 +62,6 @@ func main() {
 	if wordsInit != nil {
 		log.Fatal(wordsInit)
 	}
-	log.Println(coords.DBName) // for now
 
 	// define the external-facing server link
 	// for email confirmations, etc.
@@ -82,12 +81,16 @@ func main() {
 	log.Println(serverLink) // for now
 
 	statics := map[string]http.Handler{}
-
 	statics["/css/"] = ui.StaticFolder("css", templatesFolder)
+	statics["/js/"] = ui.StaticFolder("js", templatesFolder)
+	statics["/fonts/"] = ui.StaticFolder("fonts", templatesFolder)
 	statics["/images/"] = ui.StaticFolder("images", templatesFolder)
+
+	ui.InitializeTemplates(templatesFolder)
 
 	handlers := map[string]func(http.ResponseWriter, *http.Request){}
 	handlers["/browser/"] = ui.UnsupportedBrowserHandler(templatesFolder)
+	handlers["/addpost"] = ui.MakeHTMLHandler(ui.PostMessage, coords)
 
 	api.RequestServer(serverHost, api.DefaultServerTransport, serverPort, api.DefaultServerReadTimeout, statics, handlers)
 }

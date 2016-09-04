@@ -3,3 +3,7 @@
    <script src="/js/ie10-viewport-bug-workaround.js"></script>
    <script src="/js/chosen.jquery.min.js"></script>
    <script src="/js/modernizr.js"></script>
+   <script type="text/javascript">
+var TEAMWORK = TEAMWORK || {};
+TEAMWORK.session = {{if .Session.Id}}{{.Session.Id}}{{else}}null{{end}};
+   </script>
