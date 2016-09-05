@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head.html" .}}
+ <body>
+   <div class="container-fluid">
+
+     <!-- navigation -->
+     <!-- /navigation -->
+     
+     <!-- alert page message -->
+{{template "alert.html" .}}
+     <!-- /alert page message -->
+
+     <!-- content (outer) -->
+     <div class="row">
+       <div class="col-xs-1 col-md-1"></div>
+       <div class="clearfix visible-xs-block"></div>
+       <div class="col-xs-10 col-md-10">
+
+	 <!-- content (inner) -->
+	 <div class="row">
+	   <div class="col-xs-10 col-md-10">
+
+             <form class="form-inline" method="post" action="/login">
+               <div class="form-group">
+                 <label class="sr-only" for="userEmail">Your email address</label>
+                 <div class="input-group">
+                   <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                   <input type="text" class="form-control" id="userEmail" name="userEmail" placeholder="me@example.com">
+                 </div>
+                 <button type="submit" class="btn btn-primary">Go <i class="fa fa-sign-in"></i></button>
+               </div>
+             </form>
+
+	   </div>
+	 </div>
+	 <!-- /content (inner) -->
+
+       </div>
+     </div>
+     <!-- /content (outer) -->
+
+   </div>
+   <!-- /container -->
+
+{{template "scripts.html"}}
+   <script type="text/javascript">
+$(function(){
+    $("#userEmail").focus();
+});      
+   </script>   
+ </body>
+</html>

@@ -91,6 +91,7 @@ func main() {
 	handlers := map[string]func(http.ResponseWriter, *http.Request){}
 	handlers["/browser/"] = ui.UnsupportedBrowserHandler(templatesFolder)
 	handlers["/addpost"] = ui.MakeHTMLHandler(ui.PostMessage, coords)
+	handlers["/session"] = ui.MakeHTMLHandler(ui.CreateSession, coords)
 
 	api.RequestServer(serverHost, api.DefaultServerTransport, serverPort, api.DefaultServerReadTimeout, statics, handlers)
 }

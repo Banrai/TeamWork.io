@@ -1,0 +1,12 @@
+{{if .Alert.Message}}
+     <div class="row">
+       <div class="col-xs-1 col-md-1"></div>
+       <div class="clearfix visible-xs-block"></div>
+       <div class="col-xs-10 col-md-10">
+         <div class="alert {{if .Alert.AlertType}}{{.Alert.AlertType}}{{else}}alert-info{{end}} alert-dismissible" role="alert">
+           <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+           <i class="fa {{if .Alert.Icon}}{{.Alert.Icon}}{{else}}fa-info-circle{{end}}"></i> {{.Alert.Message}}
+         </div>
+       </div>
+     </div>
+{{end}}

@@ -23,8 +23,11 @@ var (
 
 	UNSUPPORTED_TEMPLATE_FILE = "browser_not_supported.html"
 
-	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "scripts.html"}
+	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "scripts.html", "session.html"}
 	NEW_POST_TEMPLATE       *template.Template
+
+	CREATE_SESSION_TEMPLATE_FILES = []string{"create-session.html", "head.html", "alert.html", "scripts.html"}
+	CREATE_SESSION_TEMPLATE       *template.Template
 
 	TEMPLATES_INITIALIZED = false
 )
@@ -60,17 +63,16 @@ func StaticFolder(folder string, templatesFolder string) http.Handler {
 	return http.StripPrefix(fmt.Sprintf("/%s/", folder), http.FileServer(http.Dir(path.Join(templatesFolder, fmt.Sprintf("../%s/", folder)))))
 }
 
-/* HTML template structs */
-
-type NewPostPage struct {
-	Title   string
-	Session *database.SESSION
-	Keys    []*database.PUBLIC_KEY
+type Alert struct {
+	AlertType string
+	Icon      string
+	Message   template.HTML
 }
 
 // InitializeTemplates confirms the given folder string leads to the html
 // template files, otherwise templates.Must() will complain
 func InitializeTemplates(folder string) {
 	NEW_POST_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_POST_TEMPLATE_FILES)...))
+	CREATE_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CREATE_SESSION_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true
 }
