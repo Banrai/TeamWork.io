@@ -44,7 +44,7 @@ func (s *SESSION) Add(stmt *sql.Stmt, PersonId string, codeSize int, duration ti
 
 	err := stmt.QueryRow(code, PersonId, expires).Scan(&id)
 
-	return id.String, err
+	return code, err
 }
 
 func (s *SESSION) Delete(stmt *sql.Stmt) error {

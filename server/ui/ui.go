@@ -10,6 +10,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path"
+	"time"
+)
+
+const (
+	// configuration
+	SESSION_WORDS    = 6 // it's a magic number
+	SESSION_DURATION = 30 * time.Minute
+
+	// Errors and alerts
+	DISABLED    = "Sorry, this email address and all of its public keys has been disabled"
+	OTHER_ERROR = "Sorry, there was a problem"
+
+	// sending automated emails
+	CONTACT_SENDER = "noreply@teamwork.io"
 )
 
 var (
@@ -28,6 +42,9 @@ var (
 
 	CREATE_SESSION_TEMPLATE_FILES = []string{"create-session.html", "head.html", "alert.html", "scripts.html"}
 	CREATE_SESSION_TEMPLATE       *template.Template
+
+	EMAIL_TEMPLATE_FILES = []string{"email.html"}
+	EMAIL_TEMPLATE       *template.Template
 
 	TEMPLATES_INITIALIZED = false
 )
@@ -69,10 +86,17 @@ type Alert struct {
 	Message   template.HTML
 }
 
+type EmailMessage struct {
+	Subject string
+	Heading string
+	Message []string
+}
+
 // InitializeTemplates confirms the given folder string leads to the html
 // template files, otherwise templates.Must() will complain
 func InitializeTemplates(folder string) {
 	NEW_POST_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_POST_TEMPLATE_FILES)...))
 	CREATE_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CREATE_SESSION_TEMPLATE_FILES)...))
+	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true
 }
