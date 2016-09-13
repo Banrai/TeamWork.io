@@ -29,6 +29,7 @@ func WithDatabase(dbCoords DBConnection, fn func(map[string]*sql.Stmt)) {
 		SESSION_UPDATE,
 		SESSION_CLEANUP,
 		SESSION_LOOKUP_BY_CODE,
+		SESSION_LOOKUP_BY_ID,
 		SESSION_LOOKUP_BY_PERSON,
 		PK_INSERT,
 		PK_UPDATE,

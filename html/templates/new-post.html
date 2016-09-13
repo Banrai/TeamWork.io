@@ -18,6 +18,7 @@
 	   <div class="col-xs-10 col-md-10">
 
 	     <form id="msg" class="form-horizontal" method="post" action="/addpost">
+	       {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
 	       <div class="form-group">
 		 <div id="recipient-team" style="padding-top:20px">
 		   <select id="recipients" name="recipients" class="chosen-select" data-placeholder="Add a person" multiple="multiple" tabindex="4">

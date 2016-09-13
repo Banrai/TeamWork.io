@@ -22,8 +22,9 @@ const (
 	SESSION_CLEANUP = "delete from session where date_expires <= (now() at time zone 'UTC')"
 
 	// session lookup
-	SESSION_LOOKUP_BY_CODE   = "select id, person_id, date_created, verified, date_verified, date_expires from session where session_code = $1"
-	SESSION_LOOKUP_BY_PERSON = "select id, session_code, date_created, verified, date_verified, date_expires from session where person_id = $1"
+	SESSION_LOOKUP_BY_CODE   = "select id, person_id, session_code, date_created, verified, date_verified, date_expires from session where session_code = $1"
+	SESSION_LOOKUP_BY_ID     = "select id, person_id, session_code, date_created, verified, date_verified, date_expires from session where session_code = $1"
+	SESSION_LOOKUP_BY_PERSON = "select id, person_id, session_code, date_created, verified, date_verified, date_expires from session where person_id = $1"
 )
 
 type SESSION struct {
@@ -70,15 +71,15 @@ func LookupSession(stmt *sql.Stmt, code string) (*SESSION, error) {
 
 	for rows.Next() {
 		var (
-			id, person_id                             sql.NullString
+			id, person_id, session_code               sql.NullString
 			verified                                  sql.NullBool
 			date_created, date_verified, date_expires pq.NullTime
 		)
-		err := rows.Scan(&id, &person_id, &date_created, &verified, &date_verified, &date_expires)
+		err := rows.Scan(&id, &person_id, &session_code, &date_created, &verified, &date_verified, &date_expires)
 		if err != nil {
 			return result, err
 		} else {
-			result.Code = code
+			result.Code = session_code.String
 			result.Id = id.String
 			result.PersonId = person_id.String
 			result.DateCreated = date_created.Time

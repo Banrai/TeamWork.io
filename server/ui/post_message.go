@@ -4,8 +4,10 @@
 package ui
 
 import (
+	"database/sql"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"net/http"
+	"strings"
 )
 
 type NewPostPage struct {
@@ -18,7 +20,44 @@ type NewPostPage struct {
 func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
 	if "POST" == r.Method {
 		r.ParseForm()
-		// check for session/person validity
+
+		sessionCode, sessionCodeExists := r.PostForm["session"]
+		if sessionCodeExists {
+			sessionId := strings.Join(sessionCode, "")
+			if len(sessionId) > 0 {
+
+				fn := func(stmt map[string]*sql.Stmt) {
+					// remove any expired sessions
+					database.CleanupSessions(stmt[database.SESSION_CLEANUP])
+
+					// fetch the session corresponding to this id
+					session, sessionErr := database.LookupSession(stmt[database.SESSION_LOOKUP_BY_ID], sessionId)
+					if sessionErr != nil {
+						//alert.AlertType = "alert-danger"
+						//alert.Icon = "fa-exclamation-triangle"
+						//alert.Message = OTHER_ERROR
+						return
+					}
+
+					// attempt to find the person for this session
+					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
+					if personErr != nil {
+						//alert.AlertType = "alert-danger"
+						//alert.Icon = "fa-exclamation-triangle"
+						//alert.Message = OTHER_ERROR
+						return
+					}
+
+					if !person.Enabled {
+						//alert.AlertType = "alert-danger"
+						//alert.Icon = "fa-exclamation-triangle"
+						//alert.Message = DISABLED
+						return
+					}
+				}
+				database.WithDatabase(db, fn)
+			}
+		}
 	}
 
 	postForm := &NewPostPage{Title: "New Post", Session: &database.SESSION{}, Person: &database.PERSON{}}
