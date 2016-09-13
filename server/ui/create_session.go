@@ -101,8 +101,10 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 						attachments)
 					if sendErr != nil {
 						http.Error(w, sendErr.Error(), http.StatusInternalServerError)
+					} else {
+						// present the session code form
+						Redirect("/confirm")(w, r)
 					}
-					// else: present the session code form
 				}
 
 				database.WithDatabase(db, fn)

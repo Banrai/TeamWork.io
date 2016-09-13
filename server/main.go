@@ -92,6 +92,7 @@ func main() {
 	handlers["/browser/"] = ui.UnsupportedBrowserHandler(templatesFolder)
 	handlers["/addpost"] = ui.MakeHTMLHandler(ui.PostMessage, coords)
 	handlers["/session"] = ui.MakeHTMLHandler(ui.CreateSession, coords)
+	handlers["/confirm"] = ui.MakeHTMLHandler(ui.ConfirmSession, coords)
 
 	api.RequestServer(serverHost, api.DefaultServerTransport, serverPort, api.DefaultServerReadTimeout, statics, handlers)
 }

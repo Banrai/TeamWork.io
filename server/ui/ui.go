@@ -43,6 +43,9 @@ var (
 	CREATE_SESSION_TEMPLATE_FILES = []string{"create-session.html", "head.html", "alert.html", "scripts.html"}
 	CREATE_SESSION_TEMPLATE       *template.Template
 
+	CONFIRM_SESSION_TEMPLATE_FILES = []string{"confirm-session.html", "head.html", "alert.html", "scripts.html"}
+	CONFIRM_SESSION_TEMPLATE       *template.Template
+
 	EMAIL_TEMPLATE_FILES = []string{"email.html"}
 	EMAIL_TEMPLATE       *template.Template
 
@@ -97,6 +100,7 @@ type EmailMessage struct {
 func InitializeTemplates(folder string) {
 	NEW_POST_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_POST_TEMPLATE_FILES)...))
 	CREATE_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CREATE_SESSION_TEMPLATE_FILES)...))
+	CONFIRM_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CONFIRM_SESSION_TEMPLATE_FILES)...))
 	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true
 }
