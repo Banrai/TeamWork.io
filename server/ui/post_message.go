@@ -12,12 +12,15 @@ import (
 
 type NewPostPage struct {
 	Title   string
+	Alert   *Alert
 	Session *database.SESSION
 	Person  *database.PERSON
 	Keys    []*database.PUBLIC_KEY
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
+	alert := new(Alert)
+
 	if "POST" == r.Method {
 		r.ParseForm()
 
@@ -33,25 +36,25 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					// fetch the session corresponding to this id
 					session, sessionErr := database.LookupSession(stmt[database.SESSION_LOOKUP_BY_ID], sessionId)
 					if sessionErr != nil {
-						//alert.AlertType = "alert-danger"
-						//alert.Icon = "fa-exclamation-triangle"
-						//alert.Message = OTHER_ERROR
+						alert.AlertType = "alert-danger"
+						alert.Icon = "fa-exclamation-triangle"
+						alert.Message = OTHER_ERROR
 						return
 					}
 
 					// attempt to find the person for this session
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
 					if personErr != nil {
-						//alert.AlertType = "alert-danger"
-						//alert.Icon = "fa-exclamation-triangle"
-						//alert.Message = OTHER_ERROR
+						alert.AlertType = "alert-danger"
+						alert.Icon = "fa-exclamation-triangle"
+						alert.Message = OTHER_ERROR
 						return
 					}
 
 					if !person.Enabled {
-						//alert.AlertType = "alert-danger"
-						//alert.Icon = "fa-exclamation-triangle"
-						//alert.Message = DISABLED
+						alert.AlertType = "alert-danger"
+						alert.Icon = "fa-exclamation-triangle"
+						alert.Message = DISABLED
 						return
 					}
 				}

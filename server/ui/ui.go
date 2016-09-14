@@ -37,7 +37,7 @@ var (
 
 	UNSUPPORTED_TEMPLATE_FILE = "browser_not_supported.html"
 
-	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "scripts.html", "session.html"}
+	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "alert.html", "scripts.html", "session.html"}
 	NEW_POST_TEMPLATE       *template.Template
 
 	CREATE_SESSION_TEMPLATE_FILES = []string{"create-session.html", "head.html", "alert.html", "scripts.html"}
