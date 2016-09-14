@@ -20,6 +20,7 @@ type NewPostPage struct {
 
 func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
 	alert := new(Alert)
+	alert.Message = "You need to create a session to be able to post a new message. If you have already decryted a session code, you can <a href=\"/confirm\">confirm it here</a>"
 
 	if "POST" == r.Method {
 		r.ParseForm()
@@ -63,6 +64,6 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 		}
 	}
 
-	postForm := &NewPostPage{Title: "New Post", Session: &database.SESSION{}, Person: &database.PERSON{}}
-	NEW_POST_TEMPLATE.Execute(w, postForm)
+	sessionForm := &CreateSessionPage{Title: "New Session", Alert: alert}
+	CREATE_SESSION_TEMPLATE.Execute(w, sessionForm)
 }
