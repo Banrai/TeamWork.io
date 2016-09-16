@@ -20,7 +20,7 @@ const (
 
 	// lookups
 	MESSAGES_BY_AUTHOR    = "select id, message, date_posted, date_expires from message where person_id = $1"
-	MESSAGES_BY_RECIPIENT = "select m.id, m.message, m.date_posted, m.date_expires from message m, message_recipient mr where m.id = mr.message_id and mr.person_id = $"
+	MESSAGES_BY_RECIPIENT = "select m.id, m.message, m.date_posted, m.date_expires from message m, message_recipient mr where m.id = mr.message_id and mr.person_id = $1"
 	RECIPIENTS_BY_MESSAGE = "select person_id from message_recipient where message_id = $1"
 )
 
