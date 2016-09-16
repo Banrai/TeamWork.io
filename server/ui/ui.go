@@ -17,10 +17,12 @@ const (
 	// configuration
 	SESSION_WORDS    = 6 // it's a magic number
 	SESSION_DURATION = 30 * time.Minute
+	MESSAGE_DURATION = 30 * 24 * time.Hour
 
 	// Errors and alerts
-	DISABLED    = "Sorry, this email address and all of its public keys has been disabled"
-	OTHER_ERROR = "Sorry, there was a problem"
+	DISABLED        = "Sorry, this email address and all of its public keys has been disabled"
+	INVALID_SESSION = "Sorry, this session is no longer valid"
+	OTHER_ERROR     = "Sorry, there was a problem"
 
 	// sending automated emails
 	CONTACT_SENDER = "noreply@teamwork.io"

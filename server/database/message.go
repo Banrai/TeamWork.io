@@ -32,11 +32,11 @@ type MESSAGE struct {
 	DateExpires time.Time `json:"date_expires"`
 }
 
-func (m *MESSAGE) Add(stmt *sql.Stmt, PersonId string, duration time.Duration) (string, error) {
+func (m *MESSAGE) Add(stmt *sql.Stmt, duration time.Duration) (string, error) {
 	var id sql.NullString
 
 	expires := time.Now().UTC().Add(duration)
-	err := stmt.QueryRow(PersonId, m.Message, expires).Scan(&id)
+	err := stmt.QueryRow(m.PersonId, m.Message, expires).Scan(&id)
 
 	return id.String, err
 }
