@@ -94,5 +94,12 @@ func main() {
 	handlers["/session"] = ui.MakeHTMLHandler(ui.CreateSession, coords)
 	handlers["/confirm"] = ui.MakeHTMLHandler(ui.ConfirmSession, coords)
 
+	handlers["/searchPublicKeys"] = func(w http.ResponseWriter, r *http.Request) {
+		lookup := func(w http.ResponseWriter, r *http.Request) string {
+			return api.SearchPersonPublicKeys(r, coords)
+		}
+		api.Respond("application/json", "utf-8", lookup)(w, r)
+	}
+
 	api.RequestServer(serverHost, api.DefaultServerTransport, serverPort, api.DefaultServerReadTimeout, statics, handlers)
 }
