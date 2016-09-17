@@ -55,6 +55,13 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 						return
 					}
 
+					if len(person.Id) == 0 {
+						alert.AlertType = "alert-danger"
+						alert.Icon = "fa-exclamation-triangle"
+						alert.Message = UNKNOWN
+						return
+					}
+
 					if !person.Enabled {
 						alert.AlertType = "alert-danger"
 						alert.Icon = "fa-exclamation-triangle"
