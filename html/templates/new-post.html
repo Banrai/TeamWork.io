@@ -62,6 +62,16 @@
 {{template "modal.html"}}
      <!-- /modal -->
 
+     <!-- author public keys -->
+     {{range $key := .Keys}}
+     {{if $key.Key}}
+     <div class="PK" style="display:none;">
+{{$key.Key}}       
+     </div>
+     {{end}}
+     {{end}}
+     <!-- /author public keys -->
+
    </div>
    <!-- /container -->
 

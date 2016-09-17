@@ -21,6 +21,8 @@ const (
 
 	// Errors and alerts
 	DISABLED        = "Sorry, this email address and all of its public keys has been disabled"
+	UNKNOWN         = "Sorry, this email address is unknown"
+	NO_KEYS         = "Sorry, this email address does not have any public keys associated with it"
 	INVALID_SESSION = "Sorry, this session is no longer valid"
 	OTHER_ERROR     = "Sorry, there was a problem"
 

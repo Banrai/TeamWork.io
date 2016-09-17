@@ -59,6 +59,13 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 						return
 					}
 
+					if len(person.Id) == 0 {
+						alert.AlertType = "alert-danger"
+						alert.Icon = "fa-exclamation-triangle"
+						alert.Message = UNKNOWN
+						return
+					}
+
 					if !person.Enabled {
 						alert.AlertType = "alert-danger"
 						alert.Icon = "fa-exclamation-triangle"
@@ -76,8 +83,21 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 						}
 					}
 
+					keys, keysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
+					if keysErr != nil {
+						alert.AlertType = "alert-danger"
+						alert.Icon = "fa-exclamation-triangle"
+						alert.Message = OTHER_ERROR
+					}
+
+					if len(keys) == 0 {
+						alert.AlertType = "alert-danger"
+						alert.Icon = "fa-exclamation-triangle"
+						alert.Message = NO_KEYS
+					}
+
 					// success: present the new message form
-					postForm := &NewPostPage{Title: "New Post", Session: session, Person: person}
+					postForm := &NewPostPage{Title: "New Post", Session: session, Person: person, Keys: keys}
 					NEW_POST_TEMPLATE.Execute(w, postForm)
 				}
 
