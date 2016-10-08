@@ -40,40 +40,30 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					// fetch the session corresponding to this id
 					session, sessionErr := database.LookupSession(stmt[database.SESSION_LOOKUP_BY_ID], sessionId)
 					if sessionErr != nil {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = OTHER_ERROR
+						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 						return
 					}
 
 					// attempt to find the person for this session
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
 					if personErr != nil {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = OTHER_ERROR
+						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 						return
 					}
 
 					if len(person.Id) == 0 {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = UNKNOWN
+						alert.Update("alert-danger", "fa-exclamation-triangle", UNKNOWN)
 						return
 					}
 
 					if !person.Enabled {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = DISABLED
+						alert.Update("alert-danger", "fa-exclamation-triangle", DISABLED)
 						return
 					}
 
 					// make sure the session matches the person from the form
 					if person.Id != personId {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = INVALID_SESSION
+						alert.Update("alert-danger", "fa-exclamation-triangle", INVALID_SESSION)
 						return
 					}
 
@@ -90,9 +80,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					message.PersonId = person.Id
 					msgId, msgIdErr := message.Add(stmt[database.MESSAGE_INSERT], MESSAGE_DURATION)
 					if msgIdErr != nil {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = "Sorry, your message could not be posted at this time"
+						alert.Update("alert-danger", "fa-exclamation-triangle", "Sorry, your message could not be posted at this time")
 						return
 					}
 					message.Id = msgId
