@@ -34,18 +34,14 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 					// fetch the session corresponding to this code
 					session, sessionErr := database.LookupSession(stmt[database.SESSION_LOOKUP_BY_CODE], code)
 					if sessionErr != nil {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = OTHER_ERROR
+						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 						return
 					}
 
 					if !session.Verified {
 						session.Verified = true
 						if session.Update(stmt[database.SESSION_UPDATE]) != nil {
-							alert.AlertType = "alert-danger"
-							alert.Icon = "fa-exclamation-triangle"
-							alert.Message = OTHER_ERROR
+							alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 							return
 						}
 					}
@@ -53,47 +49,35 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 					// attempt to find the person for this session
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
 					if personErr != nil {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = OTHER_ERROR
+						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 						return
 					}
 
 					if len(person.Id) == 0 {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = UNKNOWN
+						alert.Update("alert-danger", "fa-exclamation-triangle", UNKNOWN)
 						return
 					}
 
 					if !person.Enabled {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = DISABLED
+						alert.Update("alert-danger", "fa-exclamation-triangle", DISABLED)
 						return
 					}
 
 					if !person.Verified {
 						person.Verified = true
 						if person.Update(stmt[database.PERSON_UPDATE]) != nil {
-							alert.AlertType = "alert-danger"
-							alert.Icon = "fa-exclamation-triangle"
-							alert.Message = OTHER_ERROR
+							alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 							return
 						}
 					}
 
 					keys, keysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
 					if keysErr != nil {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = OTHER_ERROR
+						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 					}
 
 					if len(keys) == 0 {
-						alert.AlertType = "alert-danger"
-						alert.Icon = "fa-exclamation-triangle"
-						alert.Message = NO_KEYS
+						alert.Update("alert-danger", "fa-exclamation-triangle", NO_KEYS)
 					}
 
 					// success: present the new message form
