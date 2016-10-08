@@ -93,6 +93,13 @@ type Alert struct {
 	Message   template.HTML
 }
 
+// A helper function to update mutiple Alert properties
+func (a *Alert) Update(typ string, icon string, msg string) {
+	a.AlertType = typ
+	a.Icon = icon
+	a.Message = template.HTML(msg)
+}
+
 type EmailMessage struct {
 	Subject string
 	Heading string
