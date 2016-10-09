@@ -203,7 +203,7 @@ func AddPersonWithKeys(pStmt, pkStmt *sql.Stmt, email string, pkList []*PUBLIC_K
 	}
 
 	for _, key := range pkList {
-		_, keyErr := key.Add(pkStmt, pId, key.Key, "", key.Source)
+		_, keyErr := key.Add(pkStmt, pId)
 		if keyErr != nil {
 			return keyErr
 		}

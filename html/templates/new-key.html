@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head.html" .}}
+ <body>
+   <div class="container-fluid">
+
+     <!-- navigation -->
+     <!-- /navigation -->
+     
+     <!-- alert page message -->
+{{template "alert.html" .}}
+     <!-- /alert page message -->
+
+     <!-- content (outer) -->
+     <div class="row">
+       <div class="col-xs-1 col-md-1"></div>
+       <div class="clearfix visible-xs-block"></div>
+       <div class="col-xs-10 col-md-10">
+
+	 <!-- content (inner) -->
+	 <div class="row">
+	   <div class="col-xs-10 col-md-10">
+
+	     <form class="form-horizontal" method="post" action="/signup" enctype="multipart/form-data">
+	       {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
+	       {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
+	       <div class="form-group">
+		 <label class="sr-only" for="userEmail">Your email address</label>
+		 <div class="input-group">
+		   <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+		   {{if .Person.Email}}
+		   <p class="form-control-static">{{.Person.Email}}</p>
+		   {{else}}
+		   <input type="text" class="form-control" id="userEmail" name="userEmail" placeholder="me@example.com">
+		   {{end}}
+		 </div>
+	       </div>
+	       <div class="form-group">
+		 <label class="sr-only" for="publicKey">Your public key file</label>
+		 <div class="input-group">
+		   <div class="input-group-addon"><i class="fa fa-key"></i></div>
+		   <span class="btn btn-default btn-file">
+		     Public Key File <input type="file" class="form-control" id="publicKey" name="publicKey">
+		   </span>
+		 </div>
+		 <div id="selectedFile" class="file-selected"></div>
+		 <!--<p class="help-block">Need help? <a href="help.html" target="_blank">Here's how</a></p>-->
+	       </div>
+	       <div class="form-group">
+		 <button type="submit" class="btn btn-primary">Go <i class="fa fa-sign-in"></i></button>
+	       </div>
+	     </form>
+
+	   </div>
+	 </div>
+	 <!-- /content (inner) -->
+
+       </div>
+     </div>
+     <!-- /content (outer) -->
+
+   </div>
+   <!-- /container -->
+
+{{template "scripts.html"}}
+{{template "session.html"}}
+   <script src="/js/upload.min.js"></script>
+ </body>
+</html>

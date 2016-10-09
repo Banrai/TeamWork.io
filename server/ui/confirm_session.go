@@ -28,11 +28,7 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 			if len(code) > 0 {
 
 				fn := func(stmt map[string]*sql.Stmt) {
-					// remove any expired sessions
-					database.CleanupSessions(stmt[database.SESSION_CLEANUP])
-
-					// fetch the session corresponding to this code
-					session, sessionErr := database.LookupSession(stmt[database.SESSION_LOOKUP_BY_CODE], code)
+					session, sessionErr := ConfirmSessionCode(code, stmt[database.SESSION_CLEANUP], stmt[database.SESSION_LOOKUP_BY_CODE])
 					if sessionErr != nil {
 						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
 						return
@@ -74,10 +70,12 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 					keys, keysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
 					if keysErr != nil {
 						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						return
 					}
 
 					if len(keys) == 0 {
 						alert.Update("alert-danger", "fa-exclamation-triangle", NO_KEYS)
+						return
 					}
 
 					// success: present the new message form

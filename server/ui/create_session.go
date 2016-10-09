@@ -4,11 +4,8 @@
 package ui
 
 import (
-	"bytes"
 	"database/sql"
-	"github.com/Banrai/TeamWork.io/server/cryptutil"
 	"github.com/Banrai/TeamWork.io/server/database"
-	"github.com/Banrai/TeamWork.io/server/emailer"
 	"net/http"
 	"strings"
 )
@@ -56,44 +53,14 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 						return
 					}
 
-					if len(publicKeys) < 1 {
-						alert.Update("alert-warning", "fa-hand-paper-o", "You need at least one public key associated with your email address: go <a href=\"/upload\">here to upload it</a>")
+					if len(publicKeys) == 0 {
+						alert.Update("alert-warning", "fa-hand-paper-o", NO_KEYS)
 						return
 					}
 
-					// go ahead and create the session
-					session := new(database.SESSION)
-					sessionCode, sessionCodeErr := session.Add(stmt[database.SESSION_INSERT], person.Id, SESSION_WORDS, SESSION_DURATION)
-					if sessionCodeErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
-						return
-					}
-
-					// use the person's public keys to encrypt the session code
-					encryptedCode, encryptedCodeErr := cryptutil.EncryptData(publicKeys, sessionCode)
-					if encryptedCodeErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
-						return
-					}
-
-					// send email with encryped code, and notification to html template
-					uuid := cryptutil.GenerateUUID(cryptutil.UndashedUUID)
-					sessionSubject := "Your TeamWork.io session"
-					messageData := []string{
-						"Here is your TeamWork.io session information.",
-						"Decrypt the attached file with your private key, and use it at the session form."}
-					attachments := []*emailer.EmailAttachment{&emailer.EmailAttachment{ContentType: emailer.TEXT_MIME, Contents: encryptedCode, FileName: uuid, FileLocation: uuid}}
-
-					var msgBuffer bytes.Buffer
-					EMAIL_TEMPLATE.Execute(&msgBuffer, &EmailMessage{Subject: sessionSubject, Heading: sessionSubject, Message: messageData})
-					sendErr := emailer.Send(sessionSubject,
-						msgBuffer.String(),
-						emailer.TEXT_MIME,
-						&emailer.EmailAddress{DisplayName: "TeamWork.io", Address: CONTACT_SENDER},
-						&emailer.EmailAddress{DisplayName: person.Email, Address: person.Email},
-						attachments)
-					if sendErr != nil {
-						http.Error(w, sendErr.Error(), http.StatusInternalServerError)
+					sessionErr := CreateNewSession(person, publicKeys, stmt[database.SESSION_INSERT])
+					if sessionErr != nil {
+						http.Error(w, sessionErr.Error(), http.StatusInternalServerError)
 					} else {
 						// present the session code form
 						Redirect("/confirm")(w, r)

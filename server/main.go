@@ -93,6 +93,7 @@ func main() {
 	handlers["/addpost"] = ui.MakeHTMLHandler(ui.PostMessage, coords)
 	handlers["/session"] = ui.MakeHTMLHandler(ui.CreateSession, coords)
 	handlers["/confirm"] = ui.MakeHTMLHandler(ui.ConfirmSession, coords)
+	handlers["/upload"] = ui.MakeHTMLHandler(ui.UploadKey, coords)
 
 	handlers["/searchPublicKeys"] = func(w http.ResponseWriter, r *http.Request) {
 		lookup := func(w http.ResponseWriter, r *http.Request) string {

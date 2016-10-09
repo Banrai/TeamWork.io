@@ -22,8 +22,10 @@ const (
 	// Errors and alerts
 	DISABLED        = "Sorry, this email address and all of its public keys has been disabled"
 	UNKNOWN         = "Sorry, this email address is unknown"
-	NO_KEYS         = "Sorry, this email address does not have any public keys associated with it"
-	INVALID_SESSION = "Sorry, this session is no longer valid"
+	NO_KEYS         = "You need at least one public key associated with your email address (go <a href=\"/upload\">here to upload it</a>)"
+	NO_EMAIL        = "Sorry, you need to provide an email address"
+	INVALID_SESSION = "Sorry, this session is no longer valid (go <a href=\"/session\">here to try again</a>)"
+	INVALID_PK      = "Sorry, we could not process your public key (please make sure it is in the correct format)"
 	OTHER_ERROR     = "Sorry, there was a problem"
 
 	// sending automated emails
@@ -49,6 +51,9 @@ var (
 
 	CONFIRM_SESSION_TEMPLATE_FILES = []string{"confirm-session.html", "head.html", "alert.html", "scripts.html"}
 	CONFIRM_SESSION_TEMPLATE       *template.Template
+
+	NEW_KEY_TEMPLATE_FILES = []string{"new-key.html", "head.html", "alert.html", "scripts.html", "session.html"}
+	NEW_KEY_TEMPLATE       *template.Template
 
 	EMAIL_TEMPLATE_FILES = []string{"email.html"}
 	EMAIL_TEMPLATE       *template.Template
@@ -112,6 +117,7 @@ func InitializeTemplates(folder string) {
 	NEW_POST_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_POST_TEMPLATE_FILES)...))
 	CREATE_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CREATE_SESSION_TEMPLATE_FILES)...))
 	CONFIRM_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CONFIRM_SESSION_TEMPLATE_FILES)...))
+	NEW_KEY_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_KEY_TEMPLATE_FILES)...))
 	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true
 }

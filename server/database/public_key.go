@@ -26,9 +26,9 @@ type PUBLIC_KEY struct {
 	Source   string    `json:"source,omitempty"`
 }
 
-func (pk *PUBLIC_KEY) Add(stmt *sql.Stmt, personId, armoredKey, nickname, source string) (string, error) {
+func (pk *PUBLIC_KEY) Add(stmt *sql.Stmt, personId string) (string, error) {
 	var id sql.NullString
-	err := stmt.QueryRow(personId, armoredKey, nickname, source).Scan(&id)
+	err := stmt.QueryRow(personId, pk.Key, pk.Nickname, pk.Source).Scan(&id)
 
 	return id.String, err
 }
