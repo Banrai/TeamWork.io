@@ -17,7 +17,7 @@ var WordTokens []string
 
 const (
 	// session a/u/d
-	SESSION_INSERT  = "insert into session (session_code, person_id, date_expires) values ($1, $2, $3) returning id"
+	SESSION_INSERT  = "insert into session (session_code, person_id, date_expires) values ($1, $2, $3 at time zone 'UTC') returning id"
 	SESSION_UPDATE  = "update session set verified = $1, date_verified = (now() at time zone 'UTC') where id = $2"
 	SESSION_CLEANUP = "delete from session where date_expires <= (now() at time zone 'UTC')"
 
