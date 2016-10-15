@@ -15,7 +15,7 @@ const (
 	PK_DELETE = "delete from public_key where id = $1"
 
 	// public key lookup
-	PK_LOOKUP = "select id, public_key, date_added, nickname, source from public_key where person_id = $1"
+	PK_LOOKUP = "select id, key, date_added, nickname, source from public_key where person_id = $1"
 )
 
 type PUBLIC_KEY struct {
