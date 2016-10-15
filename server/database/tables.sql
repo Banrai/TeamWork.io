@@ -5,7 +5,7 @@ CREATE TABLE person (
 	date_added    timestamp with time zone DEFAULT (now() at time zone 'UTC'),
 	verified      boolean DEFAULT false,
 	date_verified timestamp with time zone,
-	enabled       boolean DEFAULT false,
+	enabled       boolean DEFAULT true,
 	UNIQUE(email, id)
 );
 
