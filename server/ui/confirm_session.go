@@ -16,8 +16,13 @@ type ConfirmSessionPage struct {
 }
 
 func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
+	var (
+		s *database.SESSION
+		p *database.PERSON
+		k []*database.PUBLIC_KEY
+	)
+	confirmed := false
 	alert := new(Alert)
-	alert.Message = "If you did not get an email with a code to decrypt, you can <a href=\"/session\">request one here</a>"
 
 	if "POST" == r.Method {
 		r.ParseForm()
@@ -30,14 +35,14 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 				fn := func(stmt map[string]*sql.Stmt) {
 					session, sessionErr := ConfirmSessionCode(code, stmt[database.SESSION_CLEANUP], stmt[database.SESSION_LOOKUP_BY_CODE])
 					if sessionErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						alert.AsError(OTHER_ERROR)
 						return
 					}
 
 					if !session.Verified {
 						session.Verified = true
 						if session.Update(stmt[database.SESSION_UPDATE]) != nil {
-							alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+							alert.AsError(OTHER_ERROR)
 							return
 						}
 					}
@@ -45,42 +50,44 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 					// attempt to find the person for this session
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
 					if personErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						alert.AsError(OTHER_ERROR)
 						return
 					}
 
 					if len(person.Id) == 0 {
-						alert.Update("alert-danger", "fa-exclamation-triangle", UNKNOWN)
+						alert.AsError(UNKNOWN)
 						return
 					}
 
 					if !person.Enabled {
-						alert.Update("alert-danger", "fa-exclamation-triangle", DISABLED)
+						alert.AsError(DISABLED)
 						return
 					}
 
 					if !person.Verified {
 						person.Verified = true
 						if person.Update(stmt[database.PERSON_UPDATE]) != nil {
-							alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+							alert.AsError(OTHER_ERROR)
 							return
 						}
 					}
 
 					keys, keysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
 					if keysErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						alert.AsError(OTHER_ERROR)
 						return
 					}
 
 					if len(keys) == 0 {
-						alert.Update("alert-danger", "fa-exclamation-triangle", NO_KEYS)
+						alert.AsError(NO_KEYS)
 						return
 					}
 
-					// success: present the new message form
-					postForm := &NewPostPage{Title: "New Post", Session: session, Person: person, Keys: keys}
-					NEW_POST_TEMPLATE.Execute(w, postForm)
+					// success
+					s = session
+					p = person
+					k = keys
+					confirmed = true
 				}
 
 				database.WithDatabase(db, fn)
@@ -88,6 +95,12 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 		}
 	}
 
-	sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
-	CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
+	if confirmed {
+		postForm := &NewPostPage{Title: "New Post", Alert: alert, Session: s, Person: p, Keys: k}
+		NEW_POST_TEMPLATE.Execute(w, postForm)
+	} else {
+		alert.Message = "If you did not get an email with a code to decrypt, you can <a href=\"/session\">request one here</a>"
+		sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
+		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
+	}
 }

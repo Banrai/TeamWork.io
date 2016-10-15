@@ -105,6 +105,13 @@ func (a *Alert) Update(typ string, icon string, msg string) {
 	a.Message = template.HTML(msg)
 }
 
+// A helper function to set an error Alert with a custom message
+func (a *Alert) AsError(msg string) {
+	a.AlertType = "alert-danger"
+	a.Icon = "fa-exclamation-triangle"
+	a.Message = template.HTML(msg)
+}
+
 type EmailMessage struct {
 	Subject string
 	Heading string

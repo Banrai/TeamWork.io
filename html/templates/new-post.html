@@ -66,7 +66,7 @@
      {{range $key := .Keys}}
      {{if $key.Key}}
      <div class="PK" style="display:none;">
-{{$key.Key}}       
+{{$key.Key | html}}       
      </div>
      {{end}}
      {{end}}
