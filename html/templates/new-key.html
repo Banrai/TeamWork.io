@@ -21,7 +21,7 @@
 	 <div class="row">
 	   <div class="col-xs-10 col-md-10">
 
-	     <form class="form-horizontal" method="post" action="/signup" enctype="multipart/form-data">
+	     <form class="form-horizontal" method="post" action="/upload" enctype="multipart/form-data">
 	       {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
 	       {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
 	       <div class="form-group">
