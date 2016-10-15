@@ -23,7 +23,11 @@ TEAMWORK.reset = function () {
 }
 
 TEAMWORK.showError = function (msg) {
-    TEAMWORK.showModal("Sorry", "There was an error", msg);
+    if( msg.endsWith("Session is expired or invalid") ) {
+	TEAMWORK.showConfirmModal("Sorry", "Your session has expired", "Please click 'New Session' to get back on the saddle", "/session", "New Session");
+    } else {
+	TEAMWORK.showModal("Sorry", "There was an error", msg);
+    }
 }
 
 $(function(){
