@@ -32,24 +32,24 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 					// attempt to find the person for this email address
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_EMAIL], email)
 					if personErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						alert.AsError(OTHER_ERROR)
 						return
 					}
 
 					if len(person.Id) == 0 {
-						alert.Update("alert-danger", "fa-exclamation-triangle", UNKNOWN)
+						alert.AsError(UNKNOWN)
 						return
 					}
 
 					if !person.Enabled {
-						alert.Update("alert-danger", "fa-exclamation-triangle", DISABLED)
+						alert.AsError(DISABLED)
 						return
 					}
 
 					// find this person's public keys
 					publicKeys, publicKeysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
 					if publicKeysErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						alert.AsError(OTHER_ERROR)
 						return
 					}
 
@@ -60,7 +60,8 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 
 					sessionErr := CreateNewSession(person, publicKeys, stmt[database.SESSION_INSERT])
 					if sessionErr != nil {
-						http.Error(w, sessionErr.Error(), http.StatusInternalServerError)
+						alert.AsError(sessionErr.Error())
+						return
 					} else {
 						// present the session code form
 						Redirect("/confirm")(w, r)

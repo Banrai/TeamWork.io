@@ -40,30 +40,30 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					// fetch the session corresponding to this id
 					session, sessionErr := database.LookupSession(stmt[database.SESSION_LOOKUP_BY_ID], sessionId)
 					if sessionErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						alert.AsError(OTHER_ERROR)
 						return
 					}
 
 					// attempt to find the person for this session
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
 					if personErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", OTHER_ERROR)
+						alert.AsError(OTHER_ERROR)
 						return
 					}
 
 					if len(person.Id) == 0 {
-						alert.Update("alert-danger", "fa-exclamation-triangle", UNKNOWN)
+						alert.AsError(UNKNOWN)
 						return
 					}
 
 					if !person.Enabled {
-						alert.Update("alert-danger", "fa-exclamation-triangle", DISABLED)
+						alert.AsError(DISABLED)
 						return
 					}
 
 					// make sure the session matches the person from the form
 					if person.Id != personId {
-						alert.Update("alert-danger", "fa-exclamation-triangle", INVALID_SESSION)
+						alert.AsError(INVALID_SESSION)
 						return
 					}
 
@@ -80,7 +80,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					message.PersonId = person.Id
 					msgId, msgIdErr := message.Add(stmt[database.MESSAGE_INSERT], MESSAGE_DURATION)
 					if msgIdErr != nil {
-						alert.Update("alert-danger", "fa-exclamation-triangle", "Sorry, your message could not be posted at this time")
+						alert.AsError("Sorry, your message could not be posted at this time")
 						return
 					}
 					message.Id = msgId
