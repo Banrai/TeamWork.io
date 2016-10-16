@@ -56,7 +56,7 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 			em, emExists := r.PostForm["userEmail"]
 			if emExists {
 				// an email address should have been provided
-				email := strings.Join(em, "")
+				email := strings.ToLower(strings.Join(em, ""))
 				if len(email) == 0 {
 					alert.AsError(NO_EMAIL)
 					return

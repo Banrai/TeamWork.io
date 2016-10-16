@@ -25,7 +25,7 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 		// an email address means create a new session, if there is at least one public key associated
 		em, emExists := r.PostForm["userEmail"]
 		if emExists {
-			email := strings.Join(em, "")
+			email := strings.ToLower(strings.Join(em, ""))
 			if len(email) > 0 {
 
 				fn := func(stmt map[string]*sql.Stmt) {

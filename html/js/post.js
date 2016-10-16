@@ -47,7 +47,7 @@ $(function(){
 	    $('#recipient-search').show();
 
 	    $.post("/searchPublicKeys",
-		   { email:     email,
+		   { email:     email.toLowerCase(),
 		     personId:  TEAMWORK.person,
 		     sessionId: TEAMWORK.session})
 		.done(function(reply) {
