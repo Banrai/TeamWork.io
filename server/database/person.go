@@ -94,16 +94,16 @@ func (p *PERSON) LookupSessions(stmt *sql.Stmt) ([]*SESSION, error) {
 
 	for rows.Next() {
 		var (
-			id, session_code                          sql.NullString
+			id, person_id, session_code               sql.NullString
 			verified                                  sql.NullBool
 			date_created, date_verified, date_expires pq.NullTime
 		)
-		err := rows.Scan(&id, &session_code, &date_created, &verified, &date_verified, &date_expires)
+		err := rows.Scan(&id, &person_id, &session_code, &date_created, &verified, &date_verified, &date_expires)
 		if err != nil {
 			return results, err
 		} else {
 			result := new(SESSION)
-			result.PersonId = p.Id
+			result.PersonId = person_id.String
 			result.Id = id.String
 			result.Code = session_code.String
 			result.DateCreated = date_created.Time
