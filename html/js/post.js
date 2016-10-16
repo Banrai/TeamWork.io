@@ -46,53 +46,50 @@ $(function(){
 	    elem.attr('disabled', true);
 	    $('#recipient-search').show();
 
-	    $.ajax({type: "POST",
-		    url:  "/searchPublicKeys",
-		    data: { email:     email,
-			    personId:  TEAMWORK.person,
-			    sessionId: TEAMWORK.session},
-		    dataType: "json",
-		    success: function (reply) {
-			if( reply["msg"] && reply["err"] ) {
-			    TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
-			} else if( reply["msg"] ) {
-			    TEAMWORK.showError(reply["msg"]);
-			} else if( reply["err"] ) {
-			    TEAMWORK.showError(reply["err"]);
-			} else {
-			    if( reply.length > 0 ) {
-				$('#recipient-team').show();
-			    } // else: no keys found, prompt for upload
-			    reply.each(function (d) {
-				if( d["key"] ) {
-				    // insert new dom PK
-				    $("body").append( $("<div class='PK' style='display:none;'>"+ d["key"] +"</div>") );
-				    // and recipients entry
-				    $('#recipients').append("<option value='"+email+"' selected='selected'>"+email+"</option>");
-				    $('#recipients').trigger("chosen:updated");
-				}
-			    });
-			}
-			$('#recipient-search').hide();
-			elem.attr('disabled', false);
-			elem.val('');
-		    },
-		    error: function (reply) {
-			if( reply["msg"] && reply["err"] ) {
-			    TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
-			} else if( reply["msg"] ) {
-			    TEAMWORK.showError(reply["msg"]);
-			} else if( reply["err"] ) {
-			    TEAMWORK.showError(reply["err"]);
-			} else {
-			    // something bad happened
-			    TEAMWORK.showError("");
-			}
-			$('#recipient-search').hide();
-			elem.attr('disabled', false);
-			elem.val('');			
+	    $.post("/searchPublicKeys",
+		   { email:     email,
+		     personId:  TEAMWORK.person,
+		     sessionId: TEAMWORK.session})
+		.done(function(reply) {
+		    if( reply["msg"] && reply["err"] ) {
+			TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
+		    } else if( reply["msg"] ) {
+			TEAMWORK.showError(reply["msg"]);
+		    } else if( reply["err"] ) {
+			TEAMWORK.showError(reply["err"]);
+		    } else {
+			if( reply.length > 0 ) {
+			    $('#recipient-team').show();
+			} // else: no keys found, prompt for upload
+			$.each(reply, function (i, d) {
+			    if( d["key"] ) {
+				// insert new dom PK
+				$("body").append( $("<div class='PK' style='display:none;'>"+ d["key"] +"</div>") );
+				// and recipients entry
+				$('#recipients').append("<option value='"+email+"' selected='selected'>"+email+"</option>");
+				$('#recipients').trigger("chosen:updated");
+			    }
+			});
 		    }
-		   });
+		    $('#recipient-search').hide();
+		    elem.attr('disabled', false);
+		    elem.val('');
+		})
+		.fail(function(reply) {
+		    if( reply["msg"] && reply["err"] ) {
+			TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
+		    } else if( reply["msg"] ) {
+			TEAMWORK.showError(reply["msg"]);
+		    } else if( reply["err"] ) {
+			TEAMWORK.showError(reply["err"]);
+		    } else {
+			// something bad happened
+			TEAMWORK.showError("");
+		    }
+		    $('#recipient-search').hide();
+		    elem.attr('disabled', false);
+		    elem.val('');
+		});
 
 	    return false;
 	}

@@ -66,8 +66,7 @@
      {{range $key := .Keys}}
      {{if $key.Key}}
      <div class="PK" style="display:none;">
-{{$key.Key | html}}       
-     </div>
+{{$key.Key | html}}</div>
      {{end}}
      {{end}}
      <!-- /author public keys -->
@@ -79,6 +78,6 @@
 {{template "session.html" .}}
    <script src="/js/modal.min.js"></script>
    <script src="/js/openpgp.min.js"></script>
-   <script src="/js/post.min.js"></script>
+   <script src="/js/post.js"></script>
  </body>
 </html>

@@ -20,13 +20,13 @@ const (
 	MESSAGE_DURATION = 30 * 24 * time.Hour
 
 	// Errors and alerts
-	DISABLED        = "Sorry, this email address and all of its public keys has been disabled"
-	UNKNOWN         = "Sorry, this email address is unknown"
+	DISABLED        = "This email address and all of its public keys has been disabled"
+	UNKNOWN         = "This email address is unknown"
 	NO_KEYS         = "You need at least one public key associated with your email address (go <a href=\"/upload\">here to upload it</a>)"
-	NO_EMAIL        = "Sorry, you need to provide an email address"
-	INVALID_SESSION = "Sorry, this session is no longer valid (go <a href=\"/session\">here to create a new one</a>)"
-	INVALID_PK      = "Sorry, we could not process your public key (please make sure it is in the correct format)"
-	OTHER_ERROR     = "Sorry, there was a problem"
+	NO_EMAIL        = "You need to provide an email address"
+	INVALID_SESSION = "This session is no longer valid (go <a href=\"/session\">here to create a new one</a>)"
+	INVALID_PK      = "We could not process your public key (please make sure it is in the correct format)"
+	OTHER_ERROR     = "There was an internal problem"
 
 	// sending automated emails
 	CONTACT_SENDER = "noreply@teamwork.io"
