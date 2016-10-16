@@ -149,6 +149,11 @@ $(function(){
 	    TEAMWORK.reset();
 	}
     });
+
+    $('#post').click(function() {
+	$('#message').attr('disabled', false);
+	return true;
+    });
     
     $('#reset').click(function() {
 	TEAMWORK.reset();

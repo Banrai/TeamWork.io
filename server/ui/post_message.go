@@ -34,18 +34,21 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 			if len(sessionId) > 0 && len(personId) > 0 {
 
 				fn := func(stmt map[string]*sql.Stmt) {
-					// remove any expired sessions
-					database.CleanupSessions(stmt[database.SESSION_CLEANUP])
-
-					// fetch the session corresponding to this id
-					session, sessionErr := database.LookupSession(stmt[database.SESSION_LOOKUP_BY_ID], sessionId)
+					// make sure the session is valid
+					session, sessionErr := ConfirmSessionCode(sessionId, stmt[database.SESSION_CLEANUP], stmt[database.SESSION_LOOKUP_BY_ID])
 					if sessionErr != nil {
 						alert.AsError(OTHER_ERROR)
 						return
 					}
 
+					if len(session.Id) == 0 {
+						alert.AsError(INVALID_SESSION)
+						return
+					}
+
 					// attempt to find the person for this session
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
+					log.Println("")
 					if personErr != nil {
 						alert.AsError(OTHER_ERROR)
 						return
@@ -80,7 +83,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					message.PersonId = person.Id
 					msgId, msgIdErr := message.Add(stmt[database.MESSAGE_INSERT], MESSAGE_DURATION)
 					if msgIdErr != nil {
-						alert.AsError("Sorry, your message could not be posted at this time")
+						alert.AsError("Your message could not be posted at this time")
 						return
 					}
 					message.Id = msgId

@@ -23,7 +23,7 @@ const (
 
 	// session lookup
 	SESSION_LOOKUP_BY_CODE   = "select id, person_id, session_code, date_created, verified, date_verified, date_expires from session where session_code = $1"
-	SESSION_LOOKUP_BY_ID     = "select id, person_id, session_code, date_created, verified, date_verified, date_expires from session where session_code = $1"
+	SESSION_LOOKUP_BY_ID     = "select id, person_id, session_code, date_created, verified, date_verified, date_expires from session where id = $1"
 	SESSION_LOOKUP_BY_PERSON = "select id, person_id, session_code, date_created, verified, date_verified, date_expires from session where person_id = $1"
 )
 

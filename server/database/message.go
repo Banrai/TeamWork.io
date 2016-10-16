@@ -10,7 +10,7 @@ import (
 
 const (
 	// add + delete
-	MESSAGE_INSERT  = "insert into message (person_id, message, date_expires) values ($1, $2, $3) returning id"
+	MESSAGE_INSERT  = "insert into message (person_id, message, date_expires) values ($1, $2, $3 at time zone 'UTC') returning id"
 	MESSAGE_DELETE  = "delete from message where id = $1"
 	MESSAGE_CLEANUP = "select id from message where date_expires <= (now() at time zone 'UTC')"
 
