@@ -39,6 +39,11 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 						return
 					}
 
+					if len(session.Id) == 0 {
+						alert.AsError(INVALID_SESSION)
+						return
+					}
+
 					if !session.Verified {
 						session.Verified = true
 						if session.Update(stmt[database.SESSION_UPDATE]) != nil {
@@ -99,7 +104,9 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 		postForm := &NewPostPage{Title: "New Post", Alert: alert, Session: s, Person: p, Keys: k}
 		NEW_POST_TEMPLATE.Execute(w, postForm)
 	} else {
-		alert.Message = "If you did not get an email with a code to decrypt, you can <a href=\"/session\">request one here</a>"
+		if len(alert.Message) == 0 {
+			alert.Message = "If you did not get an email with a code to decrypt, you can <a href=\"/session\">request one here</a>"
+		}
 		sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
 		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
 	}
