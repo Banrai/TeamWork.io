@@ -6,6 +6,7 @@ package database
 import (
 	"database/sql"
 	"github.com/lib/pq"
+	"strings"
 	"time"
 )
 
@@ -42,6 +43,7 @@ type MESSAGE struct {
 
 type MESSAGE_DIGEST struct {
 	Message    *MESSAGE
+	Preview    string
 	Sender     *PERSON
 	Recipients []*PERSON
 }
@@ -161,9 +163,26 @@ func RetrieveMessages(stmt *sql.Stmt, personId string, limit, offset int64) ([]*
 	return results, nil
 }
 
+// Fetch the first unique line of the armored message as a preview
+func (m *MESSAGE) GetPreview() string {
+	for _, line := range strings.Split(m.Message, "\r\n") {
+		l := len(line)
+		if l > 0 {
+			if !strings.HasPrefix(line, "-----BEGIN") && !strings.HasPrefix(line, "Version:") && !strings.HasPrefix(line, "Comment:") {
+				until := 35
+				if l < until {
+					until = l - 1
+				}
+				return line[0:until]
+			}
+		}
+	}
+	return "[no preview available]"
+}
+
 // Retrieve the corresponding digest (which includes all the involved Person objects) for this Message
 func (m *MESSAGE) GetDigest(personStmt, recipientStmt *sql.Stmt) (*MESSAGE_DIGEST, error) {
-	result := &MESSAGE_DIGEST{Message: m}
+	result := &MESSAGE_DIGEST{Message: m, Preview: m.GetPreview()}
 
 	var (
 		person      *PERSON
