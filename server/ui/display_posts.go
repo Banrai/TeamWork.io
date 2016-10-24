@@ -94,13 +94,17 @@ func DisplayPosts(w http.ResponseWriter, r *http.Request, db database.DBConnecti
 		}
 
 	} else {
-		// retrieve the latest digests, regardless of session/person
+		// retrieve the latest digests, without session/person
 		fn := func(stmt map[string]*sql.Stmt) {
 			messages, _ := database.RetrieveMessages(stmt[database.LATEST_MESSAGES], "", POSTS_PER_PAGE, 0)
 			digests, _ := database.GetMessageDigests(stmt[database.PERSON_LOOKUP_BY_ID], stmt[database.RECIPIENTS_BY_MESSAGE], messages)
 			m = digests
 		}
 		database.WithDatabase(db, fn)
+
+		// define these as empty, so the session template renders properly
+		s = new(database.SESSION)
+		p = new(database.PERSON)
 
 	}
 
