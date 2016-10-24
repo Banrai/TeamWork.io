@@ -152,45 +152,32 @@ func (p *PERSON) LookupPublicKeys(stmt *sql.Stmt) ([]*PUBLIC_KEY, error) {
 	return results, nil
 }
 
-func (p *PERSON) LookupMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
-	results := make([]*MESSAGE, 0)
-
-	rows, err := stmt.Query(p.Id)
-	if err != nil {
-		return results, err
+func (p *PERSON) LookupMessages(stmt *sql.Stmt, usePersonId bool, limit, offset int64) ([]*MESSAGE, error) {
+	if usePersonId {
+		return RetrieveMessages(stmt, p.Id, limit, offset)
+	} else {
+		return RetrieveMessages(stmt, "", limit, offset)
 	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var (
-			id, message               sql.NullString
-			date_posted, date_expires pq.NullTime
-		)
-		err := rows.Scan(&id, &message, &date_posted, &date_expires)
-		if err != nil {
-			return results, err
-		} else {
-			result := new(MESSAGE)
-			result.PersonId = p.Id
-			result.Id = id.String
-			result.Message = message.String
-			result.DatePosted = date_posted.Time
-			result.DateExpires = date_expires.Time
-			results = append(results, result)
-		}
-	}
-
-	return results, nil
 }
 
-// Return a list of messages originated by this peron
-func (p *PERSON) LookupAuthoredMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
-	return p.LookupMessages(stmt)
+// Return a list of all messages, regardless of involvement by this person
+func (p *PERSON) LookupLatestMessages(stmt *sql.Stmt, limit, offset int64) ([]*MESSAGE, error) {
+	return p.LookupMessages(stmt, false, limit, offset)
+}
+
+// Return a list of messages originated by this person
+func (p *PERSON) LookupAuthoredMessages(stmt *sql.Stmt, limit, offset int64) ([]*MESSAGE, error) {
+	return p.LookupMessages(stmt, true, limit, offset)
 }
 
 // Return a list of messages in which this person was a recipient
-func (p *PERSON) LookupRecipientMessages(stmt *sql.Stmt) ([]*MESSAGE, error) {
-	return p.LookupMessages(stmt)
+func (p *PERSON) LookupRecipientMessages(stmt *sql.Stmt, limit, offset int64) ([]*MESSAGE, error) {
+	return p.LookupMessages(stmt, true, limit, offset)
+}
+
+// Return a list of messages in which this person was involved, either as an origniator or a recipient
+func (p *PERSON) LookupInvolvedMessages(stmt *sql.Stmt, limit, offset int64) ([]*MESSAGE, error) {
+	return p.LookupMessages(stmt, true, limit, offset)
 }
 
 // create a new Person in the db, and associate these public keys

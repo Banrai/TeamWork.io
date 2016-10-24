@@ -30,6 +30,9 @@ const (
 
 	// sending automated emails
 	CONTACT_SENDER = "noreply@teamwork.io"
+
+	// user interface
+	POSTS_PER_PAGE = 20
 )
 
 var (
@@ -45,6 +48,9 @@ var (
 
 	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "alert.html", "scripts.html", "session.html"}
 	NEW_POST_TEMPLATE       *template.Template
+
+	ALL_POSTS_TEMPLATE_FILES = []string{"posts.html", "head.html", "alert.html", "scripts.html", "session.html"}
+	ALL_POSTS_TEMPLATE       *template.Template
 
 	CREATE_SESSION_TEMPLATE_FILES = []string{"create-session.html", "head.html", "alert.html", "scripts.html"}
 	CREATE_SESSION_TEMPLATE       *template.Template
@@ -122,6 +128,7 @@ type EmailMessage struct {
 // template files, otherwise templates.Must() will complain
 func InitializeTemplates(folder string) {
 	NEW_POST_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_POST_TEMPLATE_FILES)...))
+	ALL_POSTS_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, ALL_POSTS_TEMPLATE_FILES)...))
 	CREATE_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CREATE_SESSION_TEMPLATE_FILES)...))
 	CONFIRM_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CONFIRM_SESSION_TEMPLATE_FILES)...))
 	NEW_KEY_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_KEY_TEMPLATE_FILES)...))

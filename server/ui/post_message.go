@@ -20,11 +20,18 @@ type NewPostPage struct {
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
+	var (
+		s *database.SESSION
+		p *database.PERSON
+		k []*database.PUBLIC_KEY
+	)
 	alert := new(Alert)
 	alert.Message = "You need to create a session to be able to post a new message. If you have already decryted a session code, you can <a href=\"/confirm\">confirm it here</a>"
+	confirmSession := false
 
 	if "POST" == r.Method {
 		r.ParseForm()
+		confirmSession = true
 
 		sessionCode, sessionCodeExists := r.PostForm["session"]
 		personCode, personCodeExists := r.PostForm["person"]
@@ -70,6 +77,22 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 						return
 					}
 
+					keys, keysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
+					if keysErr != nil {
+						alert.AsError(OTHER_ERROR)
+						return
+					}
+
+					if len(keys) == 0 {
+						alert.AsError(NO_KEYS)
+						return
+					}
+
+					// session, person, and keys are valid
+					s = session
+					p = person
+					k = keys
+
 					// see if there is a message to post
 					messageData, messageDataExists := r.PostForm["message"]
 					if !messageDataExists {
@@ -110,17 +133,19 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					}
 
 					// success
-					//Redirect("/posts")(w, r) // eventually: to the list of recent posts
-					// for now
 					alert.Message = "Your message has been posted"
-					postForm := &NewPostPage{Title: "New Post", Session: session, Person: person}
-					NEW_POST_TEMPLATE.Execute(w, postForm)
 				}
 				database.WithDatabase(db, fn)
 			}
 		}
 	}
 
-	sessionForm := &CreateSessionPage{Title: "New Session", Alert: alert}
-	CREATE_SESSION_TEMPLATE.Execute(w, sessionForm)
+	if confirmSession && s == nil && p == nil {
+		sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
+		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
+	} else {
+		postPage := &NewPostPage{Title: "New Post", Alert: alert, Session: s, Person: p, Keys: k}
+		NEW_POST_TEMPLATE.Execute(w, postPage)
+	}
+
 }

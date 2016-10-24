@@ -43,6 +43,8 @@ func WithDatabase(dbCoords DBConnection, fn func(map[string]*sql.Stmt)) {
 		RECIPIENT_CLEANUP,
 		MESSAGES_BY_AUTHOR,
 		MESSAGES_BY_RECIPIENT,
+		LATEST_MESSAGES,
+		LATEST_MESSAGES_INVOLVING_PERSON,
 		RECIPIENTS_BY_MESSAGE}
 
 	sslMode := "disable"

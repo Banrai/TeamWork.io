@@ -5,6 +5,7 @@ package database
 
 import (
 	"database/sql"
+	"github.com/lib/pq"
 	"time"
 )
 
@@ -19,9 +20,16 @@ const (
 	RECIPIENT_CLEANUP = "delete from message_recipient where message_id = $1"
 
 	// lookups
-	MESSAGES_BY_AUTHOR    = "select id, message, date_posted, date_expires from message where person_id = $1"
-	MESSAGES_BY_RECIPIENT = "select m.id, m.message, m.date_posted, m.date_expires from message m, message_recipient mr where m.id = mr.message_id and mr.person_id = $1"
-	RECIPIENTS_BY_MESSAGE = "select person_id from message_recipient where message_id = $1"
+	MESSAGES_BY_AUTHOR               = "select id, person_id, message, date_posted, date_expires from message where person_id = $1"
+	MESSAGES_BY_RECIPIENT            = "select m.id, m.person_id, m.message, m.date_posted, m.date_expires from message m, message_recipient mr where m.id = mr.message_id and mr.person_id = $1"
+	RECIPIENTS_BY_MESSAGE            = "select person_id from message_recipient where message_id = $1"
+	LATEST_MESSAGES                  = "select id, person_id, message, date_posted, date_expires from message order by date_posted desc limit $1 offset $2"
+	LATEST_MESSAGES_INVOLVING_PERSON = `select distinct m.id, m.person_id, m.date_posted, m.date_expires
+	from message m, message_recipient mr
+	where m.id = mr.message_id
+	and (m.person_id = $1 or mr.person_id = $1)
+	order by m.date_posted desc
+	limit $2 offset $3`
 )
 
 type MESSAGE struct {
@@ -30,6 +38,12 @@ type MESSAGE struct {
 	Message     string    `json:"message"`
 	DatePosted  time.Time `json:"date_posted"`
 	DateExpires time.Time `json:"date_expires"`
+}
+
+type MESSAGE_DIGEST struct {
+	Message    *MESSAGE
+	Sender     *PERSON
+	Recipients []*PERSON
 }
 
 func (m *MESSAGE) Add(stmt *sql.Stmt, duration time.Duration) (string, error) {
@@ -105,4 +119,98 @@ func CleanupMessages(idStmt, msgStmt, recipientStmt *sql.Stmt) []error {
 	}
 
 	return results
+}
+
+// Return a list of messages for the given query limit/offset criteria
+func RetrieveMessages(stmt *sql.Stmt, personId string, limit, offset int64) ([]*MESSAGE, error) {
+	results := make([]*MESSAGE, 0)
+
+	var (
+		rows *sql.Rows
+		err  error
+	)
+	if len(personId) > 0 {
+		rows, err = stmt.Query(personId, limit, offset)
+	} else {
+		rows, err = stmt.Query(limit, offset)
+	}
+	if err != nil {
+		return results, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			id, person_id, message    sql.NullString
+			date_posted, date_expires pq.NullTime
+		)
+		err := rows.Scan(&id, &person_id, &message, &date_posted, &date_expires)
+		if err != nil {
+			return results, err
+		} else {
+			result := new(MESSAGE)
+			result.Id = id.String
+			result.PersonId = person_id.String
+			result.Message = message.String
+			result.DatePosted = date_posted.Time
+			result.DateExpires = date_expires.Time
+			results = append(results, result)
+		}
+	}
+
+	return results, nil
+}
+
+// Retrieve the corresponding digest (which includes all the involved Person objects) for this Message
+func (m *MESSAGE) GetDigest(personStmt, recipientStmt *sql.Stmt) (*MESSAGE_DIGEST, error) {
+	result := &MESSAGE_DIGEST{Message: m}
+
+	var (
+		person      *PERSON
+		personError error
+	)
+
+	person, personError = LookupPerson(personStmt, m.PersonId)
+	if personError != nil {
+		return result, personError
+	}
+	result.Sender = person
+
+	rows, err := recipientStmt.Query(m.Id)
+	if err != nil {
+		return result, err
+	}
+	defer rows.Close()
+
+	recipients := make([]*PERSON, 0)
+	for rows.Next() {
+		var id sql.NullString
+		err := rows.Scan(&id)
+		if err != nil {
+			return result, err
+		} else {
+			person, personError = LookupPerson(personStmt, id.String)
+			if personError != nil {
+				return result, personError
+			}
+			recipients = append(recipients, person)
+		}
+	}
+	result.Recipients = recipients
+
+	return result, nil
+}
+
+// Return the corresponding digests for this list of messages
+func GetMessageDigests(personStmt, recipientStmt *sql.Stmt, messages []*MESSAGE) ([]*MESSAGE_DIGEST, []error) {
+	digests := make([]*MESSAGE_DIGEST, 0)
+	errors := make([]error, 0)
+
+	for _, message := range messages {
+		digest, err := message.GetDigest(personStmt, recipientStmt)
+		digests = append(digests, digest)
+		errors = append(errors, err)
+	}
+
+	return digests, errors
 }
