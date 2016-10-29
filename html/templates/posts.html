@@ -28,8 +28,8 @@
                <div><a href="/"><i class="fa fa-sign-out" aria-hidden="true"></i> {{$post.Sender.Email}}</a></div>
 	       {{if $post.Recipients}}
                <div><a href="/"><i class="fa fa-sign-in" aria-hidden="true"></i>
-		   {{range $recipient := $post.Recipients}}
-		   {{$recipient.Email}},
+		   {{range $i, $recipient := $post.Recipients}}
+		   {{if eq $i 0}}{{else}}, {{end}}{{$recipient.Email}}
 		   {{end}}
 		   </a></div>
 	       {{end}}
