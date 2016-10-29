@@ -28,9 +28,9 @@
 	       <div><i class="fa fa-clock-o"  aria-hidden="true"></i> {{$post.Message.DatePosted.Format "15:04:05 UTC"}}</div>
 	     </div>
              <div class="col-xs-8 col-sm-6">
-               <div><a href="/"><i class="fa fa-sign-out" aria-hidden="true"></i> {{$post.Sender.Email}}</a></div>
+               <div><a href="/addpost?recipient={{$post.Sender.Id}}"><i class="fa fa-sign-out" aria-hidden="true"></i> {{$post.Sender.Email}}</a></div>
 	       {{if $post.Recipients}}
-               <div><a href="/"><i class="fa fa-sign-in" aria-hidden="true"></i>
+               <div><a href="/addpost?{{range $i, $recipient := $post.Recipients}}{{if eq $i 0}}{{else}}&{{end}}recipient={{$recipient.Id}}{{end}}"><i class="fa fa-sign-in" aria-hidden="true"></i>
 		   {{range $i, $recipient := $post.Recipients}}
 		   {{if eq $i 0}}{{else}}, {{end}}{{$recipient.Email}}
 		   {{end}}
@@ -38,7 +38,7 @@
 	       {{end}}
              </div>
              <div class="col-xs-6 col-sm-4 message">
-               <a href="/"><i class="fa fa-sticky-note" aria-hidden="true"></i> {{$post.Preview}} ...</a>
+               <a href="/download?{{$post.Message.Id}}"><i class="fa fa-sticky-note" aria-hidden="true"></i> {{$post.Preview}} ...</a>
              </div>
 	     
 	   </div>
