@@ -5,6 +5,7 @@
    <div class="container-fluid">
 
      <!-- navigation -->
+{{template "navigation.html" .}}     
      <!-- /navigation -->
      
      <!-- alert page message -->
@@ -18,10 +19,8 @@
        <div class="col-xs-10 col-md-10">
 
 	 <!-- content (inner) -->
-	 <div class="row">
-	   <div class="col-xs-10 col-md-10">
-
-	     <form class="form-horizontal" method="post" action="/upload" enctype="multipart/form-data">
+	 
+	     <form method="post" action="/upload" enctype="multipart/form-data">
 	       {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
 	       {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
 	       <div class="form-group">
@@ -51,8 +50,6 @@
 	       </div>
 	     </form>
 
-	   </div>
-	 </div>
 	 <!-- /content (inner) -->
 
        </div>
@@ -65,5 +62,6 @@
 {{template "scripts.html"}}
 {{template "session.html"}}
    <script src="/js/upload.min.js"></script>
+   <script src="/js/navigation.min.js"></script>
  </body>
 </html>

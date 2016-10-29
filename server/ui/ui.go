@@ -58,7 +58,7 @@ var (
 	CONFIRM_SESSION_TEMPLATE_FILES = []string{"confirm-session.html", "head.html", "alert.html", "scripts.html"}
 	CONFIRM_SESSION_TEMPLATE       *template.Template
 
-	NEW_KEY_TEMPLATE_FILES = []string{"new-key.html", "head.html", "alert.html", "scripts.html", "session.html"}
+	NEW_KEY_TEMPLATE_FILES = []string{"new-key.html", "head.html", "alert.html", "navigation.html", "scripts.html", "session.html"}
 	NEW_KEY_TEMPLATE       *template.Template
 
 	EMAIL_TEMPLATE_FILES = []string{"email.html"}
