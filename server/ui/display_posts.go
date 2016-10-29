@@ -31,13 +31,15 @@ func DisplayPosts(w http.ResponseWriter, r *http.Request, db database.DBConnecti
 		r.ParseForm()
 		confirmSession = true
 
-		sessionCode, sessionCodeExists := r.PostForm["sessionCode"]
-		if sessionCodeExists {
-			code := strings.Join(sessionCode, "")
-			if len(code) > 0 {
+		sessionCode, sessionCodeExists := r.PostForm["session"]
+		personCode, personCodeExists := r.PostForm["person"]
+		if sessionCodeExists && personCodeExists {
+			sessionId := strings.Join(sessionCode, "")
+			personId := strings.Join(personCode, "")
+			if len(sessionId) > 0 && len(personId) > 0 {
 
 				fn := func(stmt map[string]*sql.Stmt) {
-					session, sessionErr := ConfirmSessionCode(code, stmt[database.SESSION_CLEANUP], stmt[database.SESSION_LOOKUP_BY_CODE])
+					session, sessionErr := ConfirmSessionCode(sessionId, stmt[database.SESSION_CLEANUP], stmt[database.SESSION_LOOKUP_BY_ID])
 					if sessionErr != nil {
 						alert.AsError(OTHER_ERROR)
 						return
@@ -79,6 +81,12 @@ func DisplayPosts(w http.ResponseWriter, r *http.Request, db database.DBConnecti
 							alert.AsError(OTHER_ERROR)
 							return
 						}
+					}
+
+					// make sure the session matches the person from the form
+					if person.Id != personId {
+						alert.AsError(INVALID_SESSION)
+						return
 					}
 
 					// found a valid session and person
