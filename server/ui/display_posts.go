@@ -86,7 +86,7 @@ func DisplayPosts(w http.ResponseWriter, r *http.Request, db database.DBConnecti
 					p = person
 
 					messages, _ := person.LookupLatestMessages(stmt[database.LATEST_MESSAGES], POSTS_PER_PAGE, 0)
-					digests, _ := database.GetMessageDigests(stmt[database.PERSON_LOOKUP_BY_ID], stmt[database.RECIPIENTS_BY_MESSAGE], messages)
+					digests, _ := database.GetMessageDigests(stmt[database.PERSON_LOOKUP_BY_ID], stmt[database.RECIPIENTS_BY_MESSAGE], messages, p.Id)
 					m = digests
 				}
 				database.WithDatabase(db, fn)
@@ -97,7 +97,7 @@ func DisplayPosts(w http.ResponseWriter, r *http.Request, db database.DBConnecti
 		// retrieve the latest digests, without session/person
 		fn := func(stmt map[string]*sql.Stmt) {
 			messages, _ := database.RetrieveMessages(stmt[database.LATEST_MESSAGES], "", POSTS_PER_PAGE, 0)
-			digests, _ := database.GetMessageDigests(stmt[database.PERSON_LOOKUP_BY_ID], stmt[database.RECIPIENTS_BY_MESSAGE], messages)
+			digests, _ := database.GetMessageDigests(stmt[database.PERSON_LOOKUP_BY_ID], stmt[database.RECIPIENTS_BY_MESSAGE], messages, "")
 			m = digests
 		}
 		database.WithDatabase(db, fn)

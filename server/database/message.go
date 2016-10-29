@@ -42,10 +42,11 @@ type MESSAGE struct {
 }
 
 type MESSAGE_DIGEST struct {
-	Message    *MESSAGE
-	Preview    string
-	Sender     *PERSON
-	Recipients []*PERSON
+	Message           *MESSAGE
+	Preview           string
+	Sender            *PERSON
+	Recipients        []*PERSON
+	InvolvesRequestor bool
 }
 
 func (m *MESSAGE) Add(stmt *sql.Stmt, duration time.Duration) (string, error) {
@@ -181,8 +182,9 @@ func (m *MESSAGE) GetPreview() string {
 }
 
 // Retrieve the corresponding digest (which includes all the involved Person objects) for this Message
-func (m *MESSAGE) GetDigest(personStmt, recipientStmt *sql.Stmt) (*MESSAGE_DIGEST, error) {
+func (m *MESSAGE) GetDigest(personStmt, recipientStmt *sql.Stmt, personId string) (*MESSAGE_DIGEST, error) {
 	result := &MESSAGE_DIGEST{Message: m, Preview: m.GetPreview()}
+	result.InvolvesRequestor = (m.PersonId == personId)
 
 	var (
 		person      *PERSON
@@ -212,6 +214,9 @@ func (m *MESSAGE) GetDigest(personStmt, recipientStmt *sql.Stmt) (*MESSAGE_DIGES
 			if personError != nil {
 				return result, personError
 			}
+			if !result.InvolvesRequestor {
+				result.InvolvesRequestor = (person.Id == personId)
+			}
 			recipients = append(recipients, person)
 		}
 	}
@@ -221,12 +226,12 @@ func (m *MESSAGE) GetDigest(personStmt, recipientStmt *sql.Stmt) (*MESSAGE_DIGES
 }
 
 // Return the corresponding digests for this list of messages
-func GetMessageDigests(personStmt, recipientStmt *sql.Stmt, messages []*MESSAGE) ([]*MESSAGE_DIGEST, []error) {
+func GetMessageDigests(personStmt, recipientStmt *sql.Stmt, messages []*MESSAGE, personId string) ([]*MESSAGE_DIGEST, []error) {
 	digests := make([]*MESSAGE_DIGEST, 0)
 	errors := make([]error, 0)
 
 	for _, message := range messages {
-		digest, err := message.GetDigest(personStmt, recipientStmt)
+		digest, err := message.GetDigest(personStmt, recipientStmt, personId)
 		digests = append(digests, digest)
 		errors = append(errors, err)
 	}

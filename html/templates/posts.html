@@ -28,7 +28,7 @@
 	       <div><i class="fa fa-calendar" aria-hidden="true"></i> {{$post.Message.DatePosted.Format "Jan 02, 2006"}}</div>
 	       <div><i class="fa fa-clock-o"  aria-hidden="true"></i> {{$post.Message.DatePosted.Format "15:04:05 UTC"}}</div>
 	     </div>
-	     {{if $sessionId}}
+	     {{if $sessionId}}{{if $post.InvolvesRequestor}}
              <div class="col-xs-8 col-sm-6">
                <div><a href="/addpost?recipient={{$post.Sender.Id}}"><i class="fa fa-sign-out" aria-hidden="true"></i> {{$post.Sender.Email}}</a></div>
 	       {{if $post.Recipients}}
@@ -39,7 +39,7 @@
 		   </a></div>
 	       {{end}}
              </div>
-	     {{end}}
+	     {{end}}{{end}}
              <div class="{{if $sessionId}}col-xs-6 col-sm-4{{else}}col-xs-8 col-sm-6{{end}} message">
                <a href="/download?message={{$post.Message.Id}}"><i class="fa fa-sticky-note" aria-hidden="true"></i> {{$post.Preview}} ...</a>
              </div>
