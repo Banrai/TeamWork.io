@@ -24,7 +24,6 @@ func DownloadMessage(w http.ResponseWriter, r *http.Request, db database.DBConne
 		d []*database.MESSAGE_DIGEST
 	)
 	alert := new(Alert)
-	alert.Message = NO_SUCH_MESSAGE
 	messageFound := false
 
 	messageId := r.URL.Query().Get("message")
@@ -123,6 +122,8 @@ func DownloadMessage(w http.ResponseWriter, r *http.Request, db database.DBConne
 		io.Copy(w, bytes.NewBufferString(m.Message))
 	} else {
 		// go back to the list of posts
+		alert.AsError(NO_SUCH_MESSAGE)
+
 		if s == nil && p == nil {
 			// retrieve the latest digests, without session/person
 			fn := func(stmt map[string]*sql.Stmt) {
