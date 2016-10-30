@@ -31,6 +31,7 @@ const (
 	and (m.person_id = $1 or mr.person_id = $1)
 	order by m.date_posted desc
 	limit $2 offset $3`
+	MESSAGE_BY_ID = "select id, person_id, message, date_posted, date_expires from message where id = $1 limit $2 offset $3"
 )
 
 type MESSAGE struct {
@@ -125,15 +126,15 @@ func CleanupMessages(idStmt, msgStmt, recipientStmt *sql.Stmt) []error {
 }
 
 // Return a list of messages for the given query limit/offset criteria
-func RetrieveMessages(stmt *sql.Stmt, personId string, limit, offset int64) ([]*MESSAGE, error) {
+func RetrieveMessages(stmt *sql.Stmt, uniqueId string, limit, offset int64) ([]*MESSAGE, error) {
 	results := make([]*MESSAGE, 0)
 
 	var (
 		rows *sql.Rows
 		err  error
 	)
-	if len(personId) > 0 {
-		rows, err = stmt.Query(personId, limit, offset)
+	if len(uniqueId) > 0 {
+		rows, err = stmt.Query(uniqueId, limit, offset)
 	} else {
 		rows, err = stmt.Query(limit, offset)
 	}

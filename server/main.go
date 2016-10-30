@@ -95,6 +95,7 @@ func main() {
 	handlers["/confirm"] = ui.MakeHTMLHandler(ui.ConfirmSession, coords)
 	handlers["/upload"] = ui.MakeHTMLHandler(ui.UploadKey, coords)
 	handlers["/posts"] = ui.MakeHTMLHandler(ui.DisplayPosts, coords)
+	handlers["/download"] = ui.MakeHTMLHandler(ui.DownloadMessage, coords)
 
 	handlers["/searchPublicKeys"] = func(w http.ResponseWriter, r *http.Request) {
 		lookup := func(w http.ResponseWriter, r *http.Request) string {
