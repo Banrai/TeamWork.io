@@ -44,7 +44,7 @@
              </div>
 	     {{end}}
              <div class="{{if $sessionId}}col-xs-6 col-sm-4{{else}}col-xs-8 col-sm-6{{end}} message">
-               <a href="/download?message={{$post.Message.Id}}"><i class="fa fa-sticky-note" aria-hidden="true"></i> {{$post.Preview}} ...</a>
+               <a class="sessionLink" href="/download?message={{$post.Message.Id}}"><i class="fa fa-sticky-note" aria-hidden="true"></i> {{$post.Preview}} ...</a>
              </div>
 	     
 	   </div>
