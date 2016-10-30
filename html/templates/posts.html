@@ -32,9 +32,9 @@
 	     {{if $sessionId}}
              <div class="col-xs-8 col-sm-6">
 	       {{if $post.InvolvesRequestor}}
-               <div><a href="/addpost?recipient={{$post.Sender.Id}}"><i class="fa fa-sign-out" aria-hidden="true"></i> {{$post.Sender.Email}}</a></div>
+               <div><a class="sessionLink" href="/addpost?recipient={{$post.Sender.Id}}"><i class="fa fa-sign-out" aria-hidden="true"></i> {{$post.Sender.Email}}</a></div>
 	       {{if $post.Recipients}}
-               <div><a href="/addpost?{{range $i, $recipient := $post.Recipients}}{{if eq $i 0}}{{else}}&{{end}}recipient={{$recipient.Id}}{{end}}"><i class="fa fa-sign-in" aria-hidden="true"></i>
+               <div><a class="sessionLink" href="/addpost?{{range $i, $recipient := $post.Recipients}}{{if eq $i 0}}{{else}}&{{end}}recipient={{$recipient.Id}}{{end}}"><i class="fa fa-sign-in" aria-hidden="true"></i>
 		   {{range $i, $recipient := $post.Recipients}}{{if eq $i 0}}{{else}}, {{end}}{{$recipient.Email}}{{end}}
 		   </a></div>
 	       {{end}}
