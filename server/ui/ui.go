@@ -28,8 +28,9 @@ const (
 	INVALID_PK      = "We could not process your public key (please make sure it is in the correct format)"
 	OTHER_ERROR     = "There was an internal problem"
 
-	// sending automated emails
+	// site/domain specific
 	CONTACT_SENDER = "noreply@teamwork.io"
+	KEY_SOURCE     = "TeamWork.io"
 
 	// user interface
 	POSTS_PER_PAGE = 20

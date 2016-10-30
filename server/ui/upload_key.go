@@ -20,8 +20,6 @@ type NewKeyPage struct {
 	Person  *database.PERSON
 }
 
-const KeySource = "TeamWork.io"
-
 func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
 	alert := new(Alert)
 
@@ -80,7 +78,7 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 					}
 
 					// now add this key to the database for this person
-					pkErr := AddPublicKey(person, uploadedKey, KeySource, pkFileHeader.Filename, stmt[database.PK_INSERT])
+					pkErr := AddPublicKey(person, uploadedKey, KEY_SOURCE, pkFileHeader.Filename, stmt[database.PK_INSERT])
 					if pkErr != nil {
 						alert.AsError(OTHER_ERROR)
 						return
@@ -142,7 +140,7 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 					}
 
 					// now add this key to the database for this person
-					pkErr := AddPublicKey(person, uploadedKey, KeySource, pkFileHeader.Filename, stmt[database.PK_INSERT])
+					pkErr := AddPublicKey(person, uploadedKey, KEY_SOURCE, pkFileHeader.Filename, stmt[database.PK_INSERT])
 					if pkErr != nil {
 						alert.AsError(OTHER_ERROR)
 						return
