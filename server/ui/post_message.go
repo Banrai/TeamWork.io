@@ -24,14 +24,14 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 		s *database.SESSION
 		p *database.PERSON
 		k []*database.PUBLIC_KEY
+		d []*database.MESSAGE_DIGEST
 	)
 	alert := new(Alert)
 	alert.Message = "You need to create a session to be able to post a new message. If you have already decryted a session code, you can <a href=\"/confirm\">confirm it here</a>"
-	confirmSession := false
+	messagePosted := false
 
 	if "POST" == r.Method {
 		r.ParseForm()
-		confirmSession = true
 
 		sessionCode, sessionCodeExists := r.PostForm["session"]
 		personCode, personCodeExists := r.PostForm["person"]
@@ -133,19 +133,34 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					}
 
 					// success
-					alert.Message = "Your message has been posted"
+					messagePosted = true
 				}
 				database.WithDatabase(db, fn)
 			}
 		}
 	}
 
-	if confirmSession && s == nil && p == nil {
+	if s == nil && p == nil {
 		sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
 		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
 	} else {
-		postPage := &NewPostPage{Title: "New Post", Alert: alert, Session: s, Person: p, Keys: k}
-		NEW_POST_TEMPLATE.Execute(w, postPage)
-	}
+		if messagePosted {
+			// note the update, and go back to all posts
+			alert.Message = "Your message has been posted"
 
+			fn := func(stmt map[string]*sql.Stmt) {
+				messages, _ := p.LookupLatestMessages(stmt[database.LATEST_MESSAGES], POSTS_PER_PAGE, 0)
+				digests, _ := database.GetMessageDigests(stmt[database.PERSON_LOOKUP_BY_ID], stmt[database.RECIPIENTS_BY_MESSAGE], messages, p.Id)
+				d = digests
+			}
+			database.WithDatabase(db, fn)
+
+			posts := &DisplayPostsPage{Title: "Latest Posts", Alert: alert, Session: s, Person: p, Posts: d}
+			ALL_POSTS_TEMPLATE.Execute(w, posts)
+		} else {
+			// go back to the post-message form
+			postPage := &NewPostPage{Title: "New Post", Alert: alert, Session: s, Person: p, Keys: k}
+			NEW_POST_TEMPLATE.Execute(w, postPage)
+		}
+	}
 }
