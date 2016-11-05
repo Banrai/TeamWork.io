@@ -173,6 +173,6 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 		database.WithDatabase(db, fn)
 	}
 
-	page := &NewKeyPage{Title: "Upload new public key", Alert: alert, Session: new(database.SESSION), Person: new(database.PERSON)}
+	page := &NewKeyPage{Title: TITLE_ADD_KEY, Alert: alert, Session: new(database.SESSION), Person: new(database.PERSON)}
 	NEW_KEY_TEMPLATE.Execute(w, page)
 }

@@ -73,6 +73,6 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 		}
 	}
 
-	sessionForm := &CreateSessionPage{Title: "New Session", Alert: alert}
+	sessionForm := &CreateSessionPage{Title: TITLE_CREATE_SESSION, Alert: alert}
 	CREATE_SESSION_TEMPLATE.Execute(w, sessionForm)
 }

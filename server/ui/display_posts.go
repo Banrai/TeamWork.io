@@ -117,10 +117,10 @@ func DisplayPosts(w http.ResponseWriter, r *http.Request, db database.DBConnecti
 	}
 
 	if confirmSession && s == nil && p == nil {
-		sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
+		sessionForm := &ConfirmSessionPage{Title: TITLE_CONFIRM_SESSION, Alert: alert}
 		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
 	} else {
-		posts := &DisplayPostsPage{Title: "Latest Posts", Alert: alert, Session: s, Person: p, Posts: m}
+		posts := &DisplayPostsPage{Title: TITLE_POSTS, Alert: alert, Session: s, Person: p, Posts: m}
 		ALL_POSTS_TEMPLATE.Execute(w, posts)
 	}
 }

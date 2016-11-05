@@ -34,6 +34,13 @@ const (
 
 	// user interface
 	POSTS_PER_PAGE = 20
+
+	// page titles
+	TITLE_POSTS           = "Latest Posts"
+	TITLE_CREATE_SESSION  = "New Session"
+	TITLE_CONFIRM_SESSION = "Confirm Session"
+	TITLE_ADD_POST        = "New Post"
+	TITLE_ADD_KEY         = "New Public Key"
 )
 
 var (

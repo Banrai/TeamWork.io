@@ -141,8 +141,8 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 	}
 
 	if s == nil && p == nil {
-		sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
-		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
+		sessionForm := &CreateSessionPage{Title: TITLE_CREATE_SESSION, Alert: alert}
+		CREATE_SESSION_TEMPLATE.Execute(w, sessionForm)
 	} else {
 		if messagePosted {
 			// note the update, and go back to all posts
@@ -155,11 +155,11 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 			}
 			database.WithDatabase(db, fn)
 
-			posts := &DisplayPostsPage{Title: "Latest Posts", Alert: alert, Session: s, Person: p, Posts: d}
+			posts := &DisplayPostsPage{Title: TITLE_POSTS, Alert: alert, Session: s, Person: p, Posts: d}
 			ALL_POSTS_TEMPLATE.Execute(w, posts)
 		} else {
 			// go back to the post-message form
-			postPage := &NewPostPage{Title: "New Post", Alert: alert, Session: s, Person: p, Keys: k}
+			postPage := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Keys: k}
 			NEW_POST_TEMPLATE.Execute(w, postPage)
 		}
 	}

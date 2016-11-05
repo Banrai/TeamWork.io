@@ -101,13 +101,13 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 	}
 
 	if confirmed {
-		postForm := &NewPostPage{Title: "New Post", Alert: alert, Session: s, Person: p, Keys: k}
+		postForm := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Keys: k}
 		NEW_POST_TEMPLATE.Execute(w, postForm)
 	} else {
 		if len(alert.Message) == 0 {
 			alert.Message = "If you did not get an email with a code to decrypt, you can <a href=\"/session\">request one here</a>"
 		}
-		sessionForm := &ConfirmSessionPage{Title: "Confirm Session", Alert: alert}
+		sessionForm := &ConfirmSessionPage{Title: TITLE_CONFIRM_SESSION, Alert: alert}
 		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
 	}
 }
