@@ -11,11 +11,17 @@ import (
 )
 
 type CreateSessionPage struct {
-	Title string
-	Alert *Alert
+	Title   string
+	Alert   *Alert
+	Session *database.SESSION
+	Person  *database.PERSON
 }
 
 func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
+	// define these as empty, so the session template renders properly
+	s := new(database.SESSION)
+	p := new(database.PERSON)
+
 	alert := new(Alert)
 	alert.Message = "If you do not have a public key associated with your email address, you can <a href=\"/upload\">upload it here</a>"
 
@@ -73,6 +79,6 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 		}
 	}
 
-	sessionForm := &CreateSessionPage{Title: TITLE_CREATE_SESSION, Alert: alert}
+	sessionForm := &CreateSessionPage{Title: TITLE_CREATE_SESSION, Alert: alert, Session: s, Person: p}
 	CREATE_SESSION_TEMPLATE.Execute(w, sessionForm)
 }

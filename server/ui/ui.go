@@ -54,19 +54,19 @@ var (
 
 	UNSUPPORTED_TEMPLATE_FILE = "browser_not_supported.html"
 
-	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "alert.html", "navigation.html", "scripts.html", "session.html"}
+	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "alert.html", "navigation.html", "scripts.html"}
 	NEW_POST_TEMPLATE       *template.Template
 
-	ALL_POSTS_TEMPLATE_FILES = []string{"posts.html", "head.html", "alert.html", "navigation.html", "scripts.html", "session.html"}
+	ALL_POSTS_TEMPLATE_FILES = []string{"posts.html", "head.html", "alert.html", "navigation.html", "scripts.html"}
 	ALL_POSTS_TEMPLATE       *template.Template
 
-	CREATE_SESSION_TEMPLATE_FILES = []string{"create-session.html", "head.html", "alert.html", "scripts.html"}
+	CREATE_SESSION_TEMPLATE_FILES = []string{"create-session.html", "head.html", "alert.html", "navigation.html", "scripts.html"}
 	CREATE_SESSION_TEMPLATE       *template.Template
 
-	CONFIRM_SESSION_TEMPLATE_FILES = []string{"confirm-session.html", "head.html", "alert.html", "scripts.html"}
+	CONFIRM_SESSION_TEMPLATE_FILES = []string{"confirm-session.html", "head.html", "alert.html", "navigation.html", "scripts.html"}
 	CONFIRM_SESSION_TEMPLATE       *template.Template
 
-	NEW_KEY_TEMPLATE_FILES = []string{"new-key.html", "head.html", "alert.html", "navigation.html", "scripts.html", "session.html"}
+	NEW_KEY_TEMPLATE_FILES = []string{"new-key.html", "head.html", "alert.html", "navigation.html", "scripts.html"}
 	NEW_KEY_TEMPLATE       *template.Template
 
 	EMAIL_TEMPLATE_FILES = []string{"email.html"}

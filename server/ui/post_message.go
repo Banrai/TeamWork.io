@@ -96,7 +96,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					// see if there is a message to post
 					messageData, messageDataExists := r.PostForm["message"]
 					if !messageDataExists {
-						alert.Message = "Please write a message before posting (encryption is optional)"
+						alert.Message = "Please write a message and hit 'Post' (encryption is optional)"
 						return
 					}
 
@@ -141,7 +141,10 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 	}
 
 	if s == nil && p == nil {
-		sessionForm := &CreateSessionPage{Title: TITLE_CREATE_SESSION, Alert: alert}
+		s = new(database.SESSION)
+		p = new(database.PERSON)
+
+		sessionForm := &CreateSessionPage{Title: TITLE_CREATE_SESSION, Alert: alert, Session: s, Person: p}
 		CREATE_SESSION_TEMPLATE.Execute(w, sessionForm)
 	} else {
 		if messagePosted {

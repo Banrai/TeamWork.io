@@ -11,8 +11,10 @@ import (
 )
 
 type ConfirmSessionPage struct {
-	Title string
-	Alert *Alert
+	Title   string
+	Alert   *Alert
+	Session *database.SESSION
+	Person  *database.PERSON
 }
 
 func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
@@ -107,7 +109,11 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 		if len(alert.Message) == 0 {
 			alert.Message = "If you did not get an email with a code to decrypt, you can <a href=\"/session\">request one here</a>"
 		}
-		sessionForm := &ConfirmSessionPage{Title: TITLE_CONFIRM_SESSION, Alert: alert}
+
+		s = new(database.SESSION)
+		p = new(database.PERSON)
+
+		sessionForm := &ConfirmSessionPage{Title: TITLE_CONFIRM_SESSION, Alert: alert, Session: s, Person: p}
 		CONFIRM_SESSION_TEMPLATE.Execute(w, sessionForm)
 	}
 }

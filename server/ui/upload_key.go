@@ -22,6 +22,7 @@ type NewKeyPage struct {
 
 func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
 	alert := new(Alert)
+	alert.Message = "Please use a public key file (in ASCII-armored format) which corresponds to this email"
 
 	if "POST" == r.Method {
 		r.ParseMultipartForm(16384)
