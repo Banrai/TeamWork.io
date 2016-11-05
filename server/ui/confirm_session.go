@@ -103,7 +103,8 @@ func ConfirmSession(w http.ResponseWriter, r *http.Request, db database.DBConnec
 	}
 
 	if confirmed {
-		postForm := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Keys: k}
+		recipients := make([]*database.PERSON, 0)
+		postForm := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Recipients: recipients, Keys: k}
 		NEW_POST_TEMPLATE.Execute(w, postForm)
 	} else {
 		if len(alert.Message) == 0 {

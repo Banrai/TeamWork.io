@@ -12,23 +12,27 @@ import (
 )
 
 type NewPostPage struct {
-	Title   string
-	Alert   *Alert
-	Session *database.SESSION
-	Person  *database.PERSON
-	Keys    []*database.PUBLIC_KEY
+	Title      string
+	Alert      *Alert
+	Session    *database.SESSION
+	Person     *database.PERSON
+	Recipients []*database.PERSON
+	Keys       []*database.PUBLIC_KEY
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
 	var (
 		s *database.SESSION
 		p *database.PERSON
+		x []*database.PERSON
 		k []*database.PUBLIC_KEY
 		d []*database.MESSAGE_DIGEST
 	)
 	alert := new(Alert)
 	alert.Message = "You need to create a session to be able to post a new message. If you have already decrypted a session code, you can <a href=\"/confirm\">confirm it here</a>"
 	messagePosted := false
+
+	values := r.URL.Query()
 
 	if "POST" == r.Method {
 		r.ParseForm()
@@ -55,7 +59,6 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 
 					// attempt to find the person for this session
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], session.PersonId)
-					log.Println("")
 					if personErr != nil {
 						alert.AsError(OTHER_ERROR)
 						return
@@ -92,6 +95,28 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					s = session
 					p = person
 					k = keys
+
+					// see if there are any predefined recipients in the get string
+					preRecipients := make([]*database.PERSON, 0)
+					if recips, recipsExist := values["recipient"]; recipsExist {
+						for _, recipId := range recips {
+							if recipId != person.Id {
+								recip, recipErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_ID], recipId)
+								if recipErr == nil { // skip any invalid recipients
+									if len(recip.Id) > 0 && recip.Enabled {
+										rKeys, rKeyErr := recip.LookupPublicKeys(stmt[database.PK_LOOKUP])
+										if rKeyErr == nil { // skip any people with invalid keys
+											preRecipients = append(preRecipients, recip)
+											for _, rKey := range rKeys {
+												k = append(k, rKey)
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					x = preRecipients
 
 					// see if there is a message to post
 					messageData, messageDataExists := r.PostForm["message"]
@@ -162,7 +187,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 			ALL_POSTS_TEMPLATE.Execute(w, posts)
 		} else {
 			// go back to the post-message form
-			postPage := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Keys: k}
+			postPage := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Recipients: x, Keys: k}
 			NEW_POST_TEMPLATE.Execute(w, postPage)
 		}
 	}
