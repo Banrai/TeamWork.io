@@ -29,7 +29,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 		d []*database.MESSAGE_DIGEST
 	)
 	alert := new(Alert)
-	alert.Message = "You need to create a session to be able to post a new message. If you have already decrypted a session code, you can <a href=\"/confirm\">confirm it here</a>"
+	alert.Message = "You need to create a session associated with your email to be able to post a new message. If you have already decrypted a session code, you can <a href=\"/confirm\">confirm it here</a>"
 	messagePosted := false
 
 	values := r.URL.Query()

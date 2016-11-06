@@ -23,7 +23,7 @@ const (
 
 	// Errors and alerts
 	DISABLED        = "This email address and all of its public keys has been disabled"
-	UNKNOWN         = "This email address is unknown"
+	UNKNOWN         = "This email address does not have any public keys associated with it (you can <a href=\"/upload\">add one here</a>)"
 	NO_KEYS         = "You need at least one public key associated with your email address (go <a href=\"/upload\">here to upload it</a>)"
 	NO_EMAIL        = "You need to provide an email address"
 	INVALID_SESSION = "This session is no longer valid (go <a href=\"/session\">here to create a new one</a>)"
