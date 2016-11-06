@@ -4,10 +4,12 @@
 package ui
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"path"
 	"time"
@@ -41,6 +43,7 @@ const (
 	TITLE_CONFIRM_SESSION = "Confirm Session"
 	TITLE_ADD_POST        = "New Post"
 	TITLE_ADD_KEY         = "New Public Key"
+	TITLE_INDEX           = "Welcome to " + KEY_SOURCE
 )
 
 var (
@@ -52,8 +55,13 @@ var (
 		return t
 	}
 
+	// static pages
 	UNSUPPORTED_TEMPLATE_FILE = "browser_not_supported.html"
 
+	INDEX_TEMPLATE_FILES = []string{"index.html", "head.html", "alert.html", "navigation.html", "scripts.html"}
+	INDEX_TEMPLATE       *template.Template
+
+	// dynamically-generated pages
 	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "alert.html", "navigation.html", "scripts.html"}
 	NEW_POST_TEMPLATE       *template.Template
 
@@ -142,4 +150,39 @@ func InitializeTemplates(folder string) {
 	NEW_KEY_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_KEY_TEMPLATE_FILES)...))
 	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true
+}
+
+// static file rendering
+type StaticPage struct {
+	Title   string
+	Alert   *Alert
+	Session *database.SESSION
+	Person  *database.PERSON
+}
+
+func renderStaticTemplateToFile(s *StaticPage, tm *template.Template, folder string, filename string) error {
+	var doc bytes.Buffer
+	err := tm.Execute(&doc, s)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(path.Join(folder, filename), doc.Bytes(), 0644)
+}
+
+func GenerateStaticFiles(templatesFolder string, outputFolder string) {
+	if !TEMPLATES_INITIALIZED {
+		InitializeTemplates(templatesFolder)
+	}
+
+	// (empty) values for the static pages alert+session data
+	a := new(Alert)
+	s := new(database.SESSION)
+	p := new(database.PERSON)
+
+	var err error
+	index := &StaticPage{Title: TITLE_INDEX, Alert: a, Session: s, Person: p}
+	err = renderStaticTemplateToFile(index, INDEX_TEMPLATE, outputFolder, "index.html")
+	if err != nil {
+		log.Println(err)
+	}
 }

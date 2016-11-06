@@ -36,9 +36,9 @@ const (
 
 func main() {
 	var (
-		dbName, dbUser, dbPass, serverHost, wordsFile, templatesFolder string
-		serverPort, externalServerPort                                 int
-		dbSSLMode, useServerSSL                                        bool
+		dbName, dbUser, dbPass, serverHost, wordsFile, templatesFolder, staticOutputFolder string
+		serverPort, externalServerPort                                                     int
+		dbSSLMode, useServerSSL, makeStaticFiles                                           bool
 	)
 
 	// get server settings from the command line args
@@ -54,6 +54,10 @@ func main() {
 	flag.StringVar(&dbName, "dbName", DBName, "The database name")
 	flag.BoolVar(&dbSSLMode, "dbSSL", DBSSL, "Does the database use SSL mode?")
 	flag.StringVar(&wordsFile, "words", WORDS, "Dictionary file (for generating random session codes)")
+
+	// versus static file generation and exit
+	flag.BoolVar(&makeStaticFiles, "staticHtml", statics, "Generate the static HTML files? (if yes, does not start the server)")
+	flag.StringVar(&staticOutputFolder, "staticHtmlFolder", staticFolder, "Output folder for the static HTML files")
 
 	flag.Parse()
 
@@ -104,5 +108,10 @@ func main() {
 		api.Respond("application/json", "utf-8", lookup)(w, r)
 	}
 
-	api.RequestServer(serverHost, api.DefaultServerTransport, serverPort, api.DefaultServerReadTimeout, statics, handlers)
+	if makeStaticFiles {
+		ui.GenerateStaticFiles(templatesFolder, staticFolder)
+	} else {
+		api.RequestServer(serverHost, api.DefaultServerTransport, serverPort, api.DefaultServerReadTimeout, statics, handlers)
+	}
+
 }
