@@ -1,7 +1,7 @@
 body {
   padding-top: 20px;
   padding-bottom: 20px;
-  font-family: Verdana, Geneva, sans-serif;
+  font-family: 'Gill Sans','Gill Sans MT',Calibri,'Trebuchet MS',Tahoma,Verdana,Geneva,sans-serif;
 }
 
 .post-header {
@@ -59,4 +59,40 @@ body {
 
 .file-selected {
     color: #008000;
+}
+
+/* For the index page, loosely based on 'Narrow Jumbotron'
+   http://getbootstrap.com/examples/jumbotron-narrow/
+*/
+
+.header,
+.marketing,
+.footer {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.footer {
+  padding-top: 19px;
+  color: #777;
+}
+
+.container .jumbotron {
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #BDB76B; /* dark khaki */
+  color: #fafafa;
+  text-shadow: 0px 2px 3px #000;
+  background-image: url("/images/Beta-skeleton.png"); /* https://en.wikipedia.org/wiki/File:Beta-skeleton.svg */
+}
+.jumbotron .btn {
+  padding: 14px 24px;
+  font-size: 21px;
+}
+
+.marketing {
+  margin: 40px 0;
+}
+.marketing p + h4 {
+  margin-top: 28px;
 }

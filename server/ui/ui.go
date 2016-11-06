@@ -58,7 +58,7 @@ var (
 	// static pages
 	UNSUPPORTED_TEMPLATE_FILE = "browser_not_supported.html"
 
-	INDEX_TEMPLATE_FILES = []string{"index.html", "head.html", "alert.html", "navigation.html", "scripts.html"}
+	INDEX_TEMPLATE_FILES = []string{"index.html", "head.html", "navigation.html", "scripts.html"}
 	INDEX_TEMPLATE       *template.Template
 
 	// dynamically-generated pages
@@ -149,13 +149,13 @@ func InitializeTemplates(folder string) {
 	CONFIRM_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CONFIRM_SESSION_TEMPLATE_FILES)...))
 	NEW_KEY_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_KEY_TEMPLATE_FILES)...))
 	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
+	INDEX_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, INDEX_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true
 }
 
 // static file rendering
 type StaticPage struct {
 	Title   string
-	Alert   *Alert
 	Session *database.SESSION
 	Person  *database.PERSON
 }
@@ -174,15 +174,16 @@ func GenerateStaticFiles(templatesFolder string, outputFolder string) {
 		InitializeTemplates(templatesFolder)
 	}
 
-	// (empty) values for the static pages alert+session data
-	a := new(Alert)
+	// static pages are session-less, but the empty session needs to be defined
 	s := new(database.SESSION)
 	p := new(database.PERSON)
 
 	var err error
-	index := &StaticPage{Title: TITLE_INDEX, Alert: a, Session: s, Person: p}
+	index := &StaticPage{Title: TITLE_INDEX, Session: s, Person: p}
 	err = renderStaticTemplateToFile(index, INDEX_TEMPLATE, outputFolder, "index.html")
 	if err != nil {
 		log.Println(err)
+	} else {
+		log.Println(fmt.Sprintf("Created '%s/index.html'", outputFolder))
 	}
 }

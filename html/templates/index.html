@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head.html" .}}
+ <body>
+   <div class="container">
+
+     <!-- navigation -->
+{{template "navigation.html" .}}
+     <!-- /navigation -->
+     
+     <!-- content (outer) -->
+     <div class="row">
+       <div class="col-xs-1 col-md-1"></div>
+       <div class="clearfix visible-xs-block"></div>
+       <div class="col-xs-10 col-md-10">
+
+	 <!-- content (inner) -->
+
+	 <div class="jumbotron">
+	   <h1>Simple Encrypted Group Messaging</h1>
+	   <p class="lead">TeamWork.io is a public bulletin board where you can post hidden messages to anyone, both individuals or teams of people simultaneously, legible by only you and them.</p>
+	   <p>
+	     <a class="btn btn-lg btn-primary" role="button" href="/addpost"><i class="fa fa-commenting-o" aria-hidden="true"></i> Post a Message</a>
+	     <a class="btn btn-lg btn-primary" role="button" href="/posts"><i class="fa fa-comments" aria-hidden="true"></i> Browse Posts</a>
+	     <a class="btn btn-lg btn-primary" role="button" href="/donate.html"><i class="fa fa-credit-card" aria-hidden="true"></i> Donate</a>
+	   </p>
+	 </div>
+
+	 <div class="row marketing">
+	   <div class="col-lg-6">
+	     <h4>Encryption Made Easy</h4>
+	     <p>Seamlessly find your friends' public keys from open key servers, and create private group messages that only they can read.</p>
+	   </div>
+
+	   <div class="col-lg-6">
+	     <h4>Your Private Keys Stay Private</h4>
+	     <p>All encryption happens on your client, under SSL, and you never have to upload or reveal your private keys to us or anyone else, ever.</p>
+	   </div>
+
+	   <div class="col-lg-6">
+	     <h4>Always Free</h4>
+	     <p>This service will always be free of charge to use, and free of ads and trackers.</p>
+	     <p><a href="/donate.html">Support Us with a Donation</a> to help keep it that way.</p>
+	   </div>
+
+	   <div class="col-lg-6">
+	     <h4>Always Confidential</h4>
+	     <p>Unless you turn encryption off, no message text is visible to anyone who does not possess the correct private key.</p>
+	     <p>Review the <a href="https://github.com/Banrai/TeamWork.io" target="_blank">source code on github</a> and fork it (contributions are welcome), or clone it to run on your own servers, under your domain.</p>
+	   </div>
+	 </div>
+	 
+	 <!-- /content (inner) -->
+
+       </div>
+     </div>
+     <!-- /content (outer) -->
+
+   </div>
+   <!-- /container -->
+
+{{template "scripts.html" .}}
+   <script src="/js/navigation.min.js"></script>
+ </body>
+</html>
