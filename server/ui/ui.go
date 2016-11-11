@@ -44,6 +44,7 @@ const (
 	TITLE_ADD_POST        = "New Post"
 	TITLE_ADD_KEY         = "New Public Key"
 	TITLE_INDEX           = "Welcome to " + KEY_SOURCE
+	TITLE_HELP            = "Help"
 )
 
 var (
@@ -60,6 +61,9 @@ var (
 
 	INDEX_TEMPLATE_FILES = []string{"index.html", "head.html", "navigation.html", "scripts.html"}
 	INDEX_TEMPLATE       *template.Template
+
+	HELP_TEMPLATE_FILES = []string{"help.html", "head.html", "navigation.html", "scripts.html"}
+	HELP_TEMPLATE       *template.Template
 
 	// dynamically-generated pages
 	NEW_POST_TEMPLATE_FILES = []string{"new-post.html", "head.html", "modal.html", "alert.html", "navigation.html", "scripts.html"}
@@ -150,6 +154,7 @@ func InitializeTemplates(folder string) {
 	NEW_KEY_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_KEY_TEMPLATE_FILES)...))
 	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
 	INDEX_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, INDEX_TEMPLATE_FILES)...))
+	HELP_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, HELP_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true
 }
 
@@ -185,5 +190,13 @@ func GenerateStaticFiles(templatesFolder string, outputFolder string) {
 		log.Println(err)
 	} else {
 		log.Println(fmt.Sprintf("Created '%s/index.html'", outputFolder))
+	}
+
+	help := &StaticPage{Title: TITLE_HELP, Session: s, Person: p}
+	err = renderStaticTemplateToFile(help, HELP_TEMPLATE, outputFolder, "help.html")
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println(fmt.Sprintf("Created '%s/help.html'", outputFolder))
 	}
 }
