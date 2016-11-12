@@ -11,6 +11,7 @@ import (
 	"github.com/Banrai/TeamWork.io/server/keyservers"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
@@ -20,6 +21,7 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 	// the result is a json representation of the list of public keys found
 	results := make([]*database.PUBLIC_KEY, 0)
 	valid := false
+	validEmail := regexp.MustCompile(`.+@.+\..+`)
 
 	// this function only responds to POST requests
 	if "POST" == r.Method {
@@ -40,6 +42,12 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 		em, emExists := r.PostForm["email"]
 		if !emExists {
 			return GenerateSimpleMessage(INVALID_REQUEST, MISSING_PARAMETER)
+		}
+
+		// make sure the email is ostensibly valid
+		searchEmail := strings.ToLower(strings.Join(em, ""))
+		if !validEmail.MatchString(searchEmail) {
+			return GenerateSimpleMessage(INVALID_REQUEST, "Not a valid email address")
 		}
 
 		fn := func(stmt map[string]*sql.Stmt) {
@@ -69,7 +77,6 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 			}
 
 			if valid {
-				searchEmail := strings.ToLower(strings.Join(em, ""))
 				// see if there any public keys for the given email address already in the db,
 				// based on existing person registrations
 				searchPerson, searchPersonErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_EMAIL], searchEmail)
