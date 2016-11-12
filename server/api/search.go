@@ -73,7 +73,7 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 				// see if there any public keys for the given email address already in the db,
 				// based on existing person registrations
 				searchPerson, searchPersonErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_EMAIL], searchEmail)
-				if len(searchPerson.Id) == 0 || searchPersonErr != nil {
+				if len(searchPerson.Id) == 0 && searchPersonErr == nil {
 					// person with this email is currently unknown
 					// see if the pk + email exist in the MIT key server
 					keys, keysErr := keyservers.MITSearch(searchEmail)

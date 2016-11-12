@@ -79,8 +79,8 @@ func parseMatchResult(in io.Reader) ([]string, error) {
 		case xml.CharData:
 			if captureData {
 				text := strings.TrimSpace(fmt.Sprintf("%s", tok))
-				if strings.IndexAny(text, "not verified") > -1 ||
-					strings.IndexAny(text, "REVOKED") > -1 {
+				if strings.Index(text, "not verified") > -1 ||
+					strings.Index(text, "REVOKED") > -1 {
 					// pop the most recent link, since it is invalid
 					results = results[:len(results)-1]
 				}
