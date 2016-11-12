@@ -89,16 +89,15 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 						results = append(results, result)
 					}
 
-					// add the PERSON and each corresponding PUBLIC_KEY to the database w/o blocking
-					go func() {
-						if len(results) > 0 {
-							log.Println(fmt.Sprintf("AddPersonWithKeys(): %s", searchEmail))
-							err := database.AddPersonWithKeys(stmt[database.PERSON_INSERT], stmt[database.PK_INSERT], searchEmail, results)
-							if err != nil {
-								log.Println(err)
-							}
+					// add the PERSON and each corresponding PUBLIC_KEY to the database
+					if len(results) > 0 {
+						log.Println(fmt.Sprintf("AddPersonWithKeys(): %s", searchEmail))
+						err := database.AddPersonWithKeys(stmt[database.PERSON_INSERT], stmt[database.PK_INSERT], searchEmail, results)
+						if err != nil {
+							log.Println(err)
 						}
-					}()
+					}
+
 				} else {
 					// email corresponds to an existing person in the db
 					personKeys, personKeysErr := searchPerson.LookupPublicKeys(stmt[database.PK_LOOKUP])
