@@ -96,3 +96,10 @@ body {
 .marketing p + h4 {
   margin-top: 28px;
 }
+
+/* For the help page
+ */
+
+.help {
+  color: #ff0000;
+}    

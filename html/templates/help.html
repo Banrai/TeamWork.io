@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head.html" .}}
+ <body>
+   <div class="container">
+
+     <!-- navigation -->
+{{template "navigation.html" .}}
+     <!-- /navigation -->
+
+     <div class="row">
+       <div class="col-xs-1 col-md-1"></div>
+       <div class="clearfix visible-xs-block"></div>
+       <div class="col-xs-10 col-md-10">
+         <div class="alert alert-info alert-dismissible" role="alert">
+           <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+           <i class="fa fa-exclamation-circle" aria-hidden="true"></i> <a href="https://github.com/Banrai/TeamWork.io/issues" target="_blank">Please suggest ways</a> this page can be extended and improved
+         </div>
+       </div>
+     </div>
+     
+     <!-- content (outer) -->
+     <div class="row">
+       <div class="col-xs-1 col-md-1"></div>
+       <div class="clearfix visible-xs-block"></div>
+       <div class="col-xs-10 col-md-10">
+
+	 <!-- content (inner) -->
+
+	 <div class="row">
+	   <div class="col-xs-1 col-md-1"></div>
+	   <div class="clearfix visible-xs-block"></div>
+	   <div class="col-lg-6">
+	     <h3><i class="fa fa-circle-o help" aria-hidden="true"></i> How to Create a Public Key</h3>
+	     <p>
+	       Use <a href="https://www.gnupg.org/" target="_blank">GnuPG</a> to generate a set of public and private keys, with the <a href="https://gnupg.org/gph/en/manual/c14.html#AEN25" target="_blank">gpg --gen-key</a> command.
+	       Making subkeys, <a href="https://alexcabal.com/creating-the-perfect-gpg-keypair/" target="_blank">as described here</a> is recommended.</p>
+	     <p>
+	       <a href="https://gnupg.org/gph/en/manual/x56.html" target="_blank">Export the public key</a> with the <a href="https://gnupg.org/gph/en/manual/r1290.html" target="_blank">armor</a> option, to create a plain ASCII text version.
+	     </p>
+	     <p>
+	       The ASCII-armored text file is what you should use to upload to this site.
+	     </p>
+	     <p>
+	       <strong><i>Never</i></strong> share your private keys with anyone.
+	     </p>
+	   </div>
+	 </div>
+
+	 <div class="row">
+	   <div class="col-xs-1 col-md-1"></div>
+	   <div class="clearfix visible-xs-block"></div>
+	   <div class="col-lg-6">
+	     <h3><i class="fa fa-circle-o help" aria-hidden="true"></i> Obtaining and Running GnuPG</h3>
+	     <p>
+	       GnuPG is <a href="https://www.gnupg.org/download/index.html" target="_blank">available for multiple operating systems</a>, and there are also some good guides here:
+	     </p>
+	     <p>
+	       <ul>
+		 <li><a href="https://ssd.eff.org/en/module/how-use-pgp-mac-os-x" target="_blank">PGP for Mac OS X</a></li>
+		 <li><a href="https://ssd.eff.org/en/module/how-use-pgp-windows" target="_blank">PGP for Windows</a></li>
+		 <li><a href="https://guardianproject.info/code/gnupg/" target="_blank">GnuPG for Android</a></li>
+	       </ul>
+	     </p>
+	     <p>
+	       Remember, <strong><i>never</i></strong> share your private keys with anyone.
+	     </p>
+	   </div>
+	 </div>
+	 
+	 <!-- /content (inner) -->
+
+       </div>
+     </div>
+     <!-- /content (outer) -->
+     
+   </div>
+   <!-- /container -->
+
+{{template "scripts.html" .}}
+   <script src="/js/navigation.min.js"></script>
+ </body>
+</html>
