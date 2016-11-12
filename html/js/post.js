@@ -60,7 +60,10 @@ $(function(){
 		    } else {
 			if( reply.length > 0 ) {
 			    $('#recipient-team').show();
-			} // else: no keys found, prompt for upload
+			} else {
+			    // no keys found, so prompt for upload
+			    TEAMWORK.showConfirmModal("Sorry", "We could not find any public keys for "+email, "But if you have a copy, you can click 'Upload Public Key' to add it yourself", "/upload", "Upload Public Key");
+			}
 			$.each(reply, function (i, d) {
 			    if( d["key"] ) {
 				// insert new dom PK
