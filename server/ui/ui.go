@@ -46,6 +46,7 @@ const (
 	TITLE_ADD_KEY         = "New Public Key"
 	TITLE_INDEX           = "Welcome to " + KEY_SOURCE
 	TITLE_HELP            = "Help"
+	TITLE_DONATE          = "Donate to " + KEY_SOURCE
 )
 
 var (
@@ -81,6 +82,9 @@ var (
 
 	NEW_KEY_TEMPLATE_FILES = []string{"new-key.html", "head.html", "alert.html", "navigation.html", "scripts.html"}
 	NEW_KEY_TEMPLATE       *template.Template
+
+	DONATE_TEMPLATE_FILES = []string{"donate.html", "head.html", "alert.html", "modal.html", "navigation.html", "scripts.html"}
+	DONATE_TEMPLATE       *template.Template
 
 	EMAIL_TEMPLATE_FILES = []string{"email.html"}
 	EMAIL_TEMPLATE       *template.Template
@@ -153,6 +157,7 @@ func InitializeTemplates(folder string) {
 	CREATE_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CREATE_SESSION_TEMPLATE_FILES)...))
 	CONFIRM_SESSION_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, CONFIRM_SESSION_TEMPLATE_FILES)...))
 	NEW_KEY_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_KEY_TEMPLATE_FILES)...))
+	DONATE_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, DONATE_TEMPLATE_FILES)...))
 	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
 	INDEX_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, INDEX_TEMPLATE_FILES)...))
 	HELP_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, HELP_TEMPLATE_FILES)...))

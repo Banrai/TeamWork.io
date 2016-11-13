@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "head.html" .}}
+ <body>
+   <div class="container">
+
+     <!-- navigation -->
+{{template "navigation.html" .}}
+     <!-- /navigation -->
+     
+     <!-- alert page message -->
+{{template "alert.html" .}}
+     <!-- /alert page message -->
+     
+     <!-- content (outer) -->
+     <div class="row">
+       <div class="col-xs-1 col-md-1"></div>
+       <div class="clearfix visible-xs-block"></div>
+       <div class="col-xs-10 col-md-10">
+
+	 <!-- content (inner) -->
+
+	 <h2><i class="fa fa-credit-card" aria-hidden="true"></i> Support Us with a Donation</h2>
+	 
+         <form class="form-inline" method="post" action="/donate">
+	   <script src="https://checkout.stripe.com/checkout.js"></script>
+	   <input type="hidden" name="stripeToken" id="stripeToken" value="">
+	   {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
+	   {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
+	   <div class="form-group">
+	     <label class="sr-only" for="amount">Your donation (USD)</label>
+	     <div class="input-group">
+	       <div class="input-group-addon"><i class="fa fa-usd"></i></div>
+	       <input type="text" class="form-control" id="amount" name="amount">
+	     </div>
+	     <button type="submit" class="btn btn-primary" id="amountCheck"><i class="fa fa-check-square-o" aria-hidden="true"></i> Donate</button>
+	   </div>
+	 </form>
+
+	 <!-- /content (inner) -->
+
+       </div>
+     </div>
+     <!-- /content (outer) -->
+     
+     <!-- modal -->
+{{template "modal.html"}}
+     <!-- /modal -->
+
+   </div>
+   <!-- /container -->
+
+{{template "scripts.html" .}}
+   <script type="text/javascript">
+TEAMWORK.stripePK = "{{.StripePK}}";
+   </script>
+   <script src="/js/modal.min.js"></script>
+   <script src="/js/navigation.min.js"></script>
+   <script src="/js/donate.min.js"></script>
+ </body>
+</html>

@@ -5,6 +5,7 @@ The server code has these dependencies, which can be fulfilled using <tt>go get<
 ```sh
 $ go get github.com/lib/pq
 $ go get golang.org/x/crypto/openpgp
+$ go get github.com/stripe/stripe-go
 ```
 
 Then, inside this (server) folder, use <tt>go build</tt> to create the server binary:

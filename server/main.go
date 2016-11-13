@@ -29,6 +29,10 @@ const (
 	DBSSL  = true
 	WORDS  = "/usr/share/dict/words"
 
+	// process donations with stripe.com
+	stripeDefaultPK = "pk_test_"
+	stripeDefaultSK = "sk_test_"
+
 	// generate the static HTML files?
 	statics      = false
 	staticFolder = "/tmp"
@@ -36,9 +40,9 @@ const (
 
 func main() {
 	var (
-		dbName, dbUser, dbPass, serverHost, wordsFile, templatesFolder, staticOutputFolder string
-		serverPort, externalServerPort                                                     int
-		dbSSLMode, useServerSSL, makeStaticFiles                                           bool
+		dbName, dbUser, dbPass, serverHost, wordsFile, templatesFolder, staticOutputFolder, stripePK, stripeSK string
+		serverPort, externalServerPort                                                                         int
+		dbSSLMode, useServerSSL, makeStaticFiles                                                               bool
 	)
 
 	// get server settings from the command line args
@@ -54,6 +58,10 @@ func main() {
 	flag.StringVar(&dbName, "dbName", DBName, "The database name")
 	flag.BoolVar(&dbSSLMode, "dbSSL", DBSSL, "Does the database use SSL mode?")
 	flag.StringVar(&wordsFile, "words", WORDS, "Dictionary file (for generating random session codes)")
+
+	// get the payment coordinates
+	flag.StringVar(&stripePK, "stripePK", stripeDefaultPK, "The Stripe Public Key")
+	flag.StringVar(&stripeSK, "stripeSK", stripeDefaultSK, "The Stripe Secret Key")
 
 	// versus static file generation and exit
 	flag.BoolVar(&makeStaticFiles, "staticHtml", statics, "Generate the static HTML files? (if yes, does not start the server)")
@@ -100,6 +108,12 @@ func main() {
 	handlers["/upload"] = ui.MakeHTMLHandler(ui.UploadKey, coords)
 	handlers["/posts"] = ui.MakeHTMLHandler(ui.DisplayPosts, coords)
 	handlers["/download"] = ui.MakeHTMLHandler(ui.DownloadMessage, coords)
+
+	// payment processing requires some additional parameters
+	stripeVals := make([]interface{}, 2)
+	stripeVals[0] = stripePK
+	stripeVals[1] = stripeSK
+	handlers["/donate"] = ui.MakeHTMLHandler(ui.ProcessDonation, coords, stripeVals[0], stripeVals[1])
 
 	handlers["/searchPublicKeys"] = func(w http.ResponseWriter, r *http.Request) {
 		lookup := func(w http.ResponseWriter, r *http.Request) string {
