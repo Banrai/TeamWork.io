@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Banrai/TeamWork.io/server/database"
+	"github.com/Banrai/TeamWork.io/server/emailer"
 	"github.com/Banrai/TeamWork.io/server/keyservers"
 	"log"
 	"net/http"
-	"regexp"
 	"strings"
 )
 
@@ -21,7 +21,6 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 	// the result is a json representation of the list of public keys found
 	results := make([]*database.PUBLIC_KEY, 0)
 	valid := false
-	validEmail := regexp.MustCompile(`.+@.+\..+`)
 
 	// this function only responds to POST requests
 	if "POST" == r.Method {
@@ -46,7 +45,7 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 
 		// make sure the email is ostensibly valid
 		searchEmail := strings.ToLower(strings.Join(em, ""))
-		if !validEmail.MatchString(searchEmail) {
+		if !emailer.IsPossibleEmail(searchEmail) {
 			return GenerateSimpleMessage(INVALID_REQUEST, "Not a valid email address")
 		}
 

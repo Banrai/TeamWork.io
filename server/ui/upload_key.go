@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"github.com/Banrai/TeamWork.io/server/cryptutil"
 	"github.com/Banrai/TeamWork.io/server/database"
+	"github.com/Banrai/TeamWork.io/server/emailer"
 	"io"
 	"net/http"
 	"strings"
@@ -59,6 +60,8 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 				if len(email) == 0 {
 					alert.AsError(NO_EMAIL)
 					return
+				} else if !emailer.IsPossibleEmail(email) {
+					alert.AsError(INVALID_EMAIL)
 				} else {
 					// attempt to find the person for this email address
 					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_EMAIL], email)

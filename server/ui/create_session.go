@@ -6,6 +6,7 @@ package ui
 import (
 	"database/sql"
 	"github.com/Banrai/TeamWork.io/server/database"
+	"github.com/Banrai/TeamWork.io/server/emailer"
 	"net/http"
 	"strings"
 )
@@ -33,6 +34,10 @@ func CreateSession(w http.ResponseWriter, r *http.Request, db database.DBConnect
 		if emExists {
 			email := strings.ToLower(strings.Join(em, ""))
 			if len(email) > 0 {
+				if !emailer.IsPossibleEmail(email) {
+					alert.AsError(INVALID_EMAIL)
+					return
+				}
 
 				fn := func(stmt map[string]*sql.Stmt) {
 					// attempt to find the person for this email address
