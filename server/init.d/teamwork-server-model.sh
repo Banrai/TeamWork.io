@@ -22,7 +22,7 @@ case "$1" in
       -ssl=true \
       -templates=/opt/src/github.com/Banrai/TeamWork.io/html/templates \
       -stripePK=pk_live_GoesHere \
-      -stripeSK=sk_live_GoesHere >> /opt/TeamWorkServer.log 2>&1
+      -stripeSK=sk_live_GoesHere >> /opt/TeamWorkServer.log 2>&1 &
     ;;
   stop)
     echo "Stopping TeamWorkServer"

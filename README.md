@@ -2,11 +2,11 @@
 
 ## About
 
-This is the source code for the service soon to be up and running at [https://teamwork.io](https://teamwork.io).
+This is the source code for the service running at [TeamWork.io](https://teamwork.io).
 
 This repository is available for review by prospective users, as well as for those people who wish to clone it and run a version of the service on their own servers.
 
-Contributions are welcome.
+Contributions, both in the form of [code suggestions](https://github.com/Banrai/TeamWork.io/pulls) and [financial donations](https://teamwork.io/donate), are welcome!
 
 ## Core Concept
 
@@ -17,6 +17,7 @@ It uses some of the basic ideas of [public key cryptography](http://www.pgpi.org
 ## Acknowledgements
 
 * The [OpenPGP JavaScript Implementation](https://openpgpjs.org/) project
+* The [Let’s Encrypt](https://letsencrypt.org/) and [Certbot](https://certbot.eff.org/) projects
 * [Twitter](https://twitter.com/) for the [Bootstrap framework](http://getbootstrap.com/)
 * [Harvest](https://www.getharvest.com/) for the [Chosen plugin](https://harvesthq.github.io/chosen/) 
 * [Dave Gandy](https://twitter.com/davegandy) for [Font Awesome](http://fontawesome.io/)
