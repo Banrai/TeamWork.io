@@ -1,3 +1,5 @@
 *~
 *.swp
 server/server
+server/TeamWorkServer
+server/init.d/teamwork-server.sh
