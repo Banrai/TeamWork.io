@@ -22,3 +22,4 @@ It uses some of the basic ideas of [public key cryptography](http://www.pgpi.org
 * [Harvest](https://www.getharvest.com/) for the [Chosen plugin](https://harvesthq.github.io/chosen/) 
 * [Dave Gandy](https://twitter.com/davegandy) for [Font Awesome](http://fontawesome.io/)
 * [Cory LaViska](https://www.abeautifulsite.net/author/claviska) for "[Whipping File Inputs Into Shape with Bootstrap 3](https://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3)"
+* [Stéphane Caron](https://scaron.info/) for his excellent [article on SPF and DKIM](https://scaron.info/blog/debian-mail-spf-dkim.html)
