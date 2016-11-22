@@ -34,7 +34,7 @@ func CreateNewSession(person *database.PERSON, keys []*database.PUBLIC_KEY, sess
 	messageData := []string{
 		"Here is your TeamWork.io session information.",
 		"Decrypt the attached file with your private key, and use it at the session form."}
-	attachments := []*emailer.EmailAttachment{&emailer.EmailAttachment{ContentType: emailer.TEXT_MIME, Contents: encryptedCode, FileName: sessionFilename}}
+	attachments := []*emailer.EmailAttachment{&emailer.EmailAttachment{ContentType: emailer.TEXT_MIME, Contents: encryptedCode, FileName: sessionFilename, FileLocation: sessionFilename}}
 
 	var textBody, htmlBody bytes.Buffer
 	EMAIL_TEMPLATE.Execute(&textBody, &EmailMessage{Subject: sessionSubject, Message: messageData})
