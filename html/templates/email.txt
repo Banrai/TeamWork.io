@@ -1,7 +1,6 @@
 {{ .Subject }}
 
-{{if .Heading}}
-{{.Heading}}
+{{if .Heading}}{{.Heading}}
 
 {{end}}
 {{range $paragraph := .Message}}

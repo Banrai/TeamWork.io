@@ -35,7 +35,7 @@ func CreateNewSession(person *database.PERSON, keys []*database.PUBLIC_KEY, sess
 	attachments := []*emailer.EmailAttachment{&emailer.EmailAttachment{ContentType: emailer.TEXT_MIME, Contents: encryptedCode, FileName: uuid, FileLocation: uuid}}
 
 	var textBody, htmlBody bytes.Buffer
-	EMAIL_TEMPLATE.Execute(&htmlBody, &EmailMessage{Subject: sessionSubject, Message: messageData})
+	EMAIL_TEMPLATE.Execute(&textBody, &EmailMessage{Subject: sessionSubject, Message: messageData})
 	HTML_EMAIL_TEMPLATE.Execute(&htmlBody, &EmailMessage{Subject: sessionSubject, Heading: sessionSubject, Message: messageData})
 	return emailer.Send(sessionSubject,
 		textBody.String(),
