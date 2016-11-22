@@ -116,7 +116,7 @@ func DownloadMessage(w http.ResponseWriter, r *http.Request, db database.DBConne
 
 	if messageFound {
 		// send its contents to the client
-		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.txt", messageId))
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.asc", messageId))
 		w.Header().Set("Content-Type", "text/plain")
 		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(m.Message)))
 		io.Copy(w, bytes.NewBufferString(m.Message))
