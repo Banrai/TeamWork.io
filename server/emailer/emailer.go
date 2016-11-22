@@ -21,7 +21,7 @@ const (
 
 	// templates for generating the message components
 	ADDRESS    = "\"{{.DisplayName}}\" <{{.Address}}>"
-	HEADERS    = "From: {{.Sender}}\r\nTo: {{.Recipient}}\r\nSubject: {{.Subject}}\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"{{.Boundary}}\"\r\n"
+	HEADERS    = "From: {{.Sender}}\r\nTo: {{.Recipient}}\r\nSubject: {{.Subject}}\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"{{.Boundary}}\"\r\n"
 	BODY       = "\r\n--{{.Boundary}}\r\nContent-Type: {{.ContentType}}\r\n\r\n{{.MessageBody}}"
 	ATTACHMENT = "\r\n--{{.Boundary}}\r\nContent-Type: {{.ContentType}}; name=\"{{.FileLocation}}\"\r\nContent-Transfer-Encoding:base64\r\nContent-Disposition: attachment; filename=\"{{.FileName}}\"\r\n\r\n{{.EncodedFileData}}"
 
