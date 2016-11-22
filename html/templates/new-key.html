@@ -23,15 +23,17 @@
 	     <form method="post" action="/upload" enctype="multipart/form-data">
 	       {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
 	       {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
-	       <div class="form-group">
-		 <label class="sr-only" for="userEmail">Your email address</label>
-		 <div class="input-group">
-		   <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
-		   {{if .Person.Email}}
-		   <p class="form-control-static">{{.Person.Email}}</p>
-		   {{else}}
-		   <input type="text" class="form-control" id="userEmail" name="userEmail" placeholder="me@example.com">
-		   {{end}}
+	       <div class="row">
+		 <div class="col-xs-8 col-md-6 form-group">
+		   <label class="sr-only" for="userEmail">Your email address</label>
+		   <div class="input-group">
+		     <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+		     {{if .Person.Email}}
+		     <p class="form-control-static">{{.Person.Email}}</p>
+		     {{else}}
+		     <input type="text" class="form-control" id="userEmail" name="userEmail" placeholder="me@example.com">
+		     {{end}}
+		   </div>
 		 </div>
 	       </div>
 	       <div class="form-group">
@@ -43,9 +45,16 @@
 		   </span>
 		 </div>
 		 <div id="selectedFile" class="file-selected"></div>
-		 <!--<p class="help-block">Need help? <a href="help.html" target="_blank">Here's how</a></p>-->
+		 <p class="help-block">Need help? <a href="help.html" target="_blank">Here's how</a></p>
 	       </div>
 	       <div class="form-group">
+		 {{if .Session.Id}}{{else}}
+		 <div class="checkbox">
+		   <label>
+		     <input type="checkbox" id="createSession" name="createSession" checked="checked"> Create a new session using this key and email it to this address
+		   </label>
+		 </div>
+		 {{end}}
 		 <button type="submit" class="btn btn-primary">Go <i class="fa fa-sign-in"></i></button>
 	       </div>
 	     </form>

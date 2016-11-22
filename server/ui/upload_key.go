@@ -6,9 +6,11 @@ package ui
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"github.com/Banrai/TeamWork.io/server/cryptutil"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"github.com/Banrai/TeamWork.io/server/emailer"
+	"html/template"
 	"io"
 	"net/http"
 	"strings"
@@ -22,6 +24,10 @@ type NewKeyPage struct {
 }
 
 func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
+	var (
+		s *database.SESSION
+		p *database.PERSON
+	)
 	alert := new(Alert)
 	alert.Message = "Please use a public key file (in ASCII-armored format) which corresponds to this email"
 
@@ -52,7 +58,7 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 				return
 			}
 
-			// an email address posted in the form request
+			// sessionless: an email address posted in the form request
 			em, emExists := r.PostForm["userEmail"]
 			if emExists {
 				// an email address should have been provided
@@ -81,13 +87,6 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 						person.Id = personId
 					}
 
-					// now add this key to the database for this person
-					pkErr := AddPublicKey(person, uploadedKey, KEY_SOURCE, pkFileHeader.Filename, stmt[database.PK_INSERT])
-					if pkErr != nil {
-						alert.AsError(OTHER_ERROR)
-						return
-					}
-
 					// find all this person's public keys
 					publicKeys, publicKeysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
 					if publicKeysErr != nil {
@@ -95,14 +94,43 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 						return
 					}
 
-					// create the session, and ask for confirmation of the decrypted code
-					sessionErr := CreateNewSession(person, publicKeys, stmt[database.SESSION_INSERT])
-					if sessionErr != nil {
-						alert.AsError(sessionErr.Error())
-						return
+					// find out if this key already exists
+					alreadyExists := false
+					for _, priorKey := range publicKeys {
+						if uploadedKey == priorKey.Key {
+							alreadyExists = true
+							break
+						}
+					}
+
+					if !alreadyExists {
+						// now add this key to the database for this person
+						pkErr := AddPublicKey(person, uploadedKey, KEY_SOURCE, pkFileHeader.Filename, stmt[database.PK_INSERT])
+						if pkErr != nil {
+							alert.AsError(OTHER_ERROR)
+							return
+						}
+						// reload all the public keys to include the new one
+						publicKeys, publicKeysErr = person.LookupPublicKeys(stmt[database.PK_LOOKUP])
+						if publicKeysErr != nil {
+							alert.AsError(OTHER_ERROR)
+							return
+						}
+					}
+
+					_, createSessionExists := r.PostForm["createSession"]
+					if createSessionExists {
+						// create the session, and ask for confirmation of the decrypted code
+						sessionErr := CreateNewSession(person, publicKeys, stmt[database.SESSION_INSERT])
+						if sessionErr != nil {
+							alert.AsError(sessionErr.Error())
+							return
+						} else {
+							// present the session code form
+							Redirect("/confirm")(w, r)
+						}
 					} else {
-						// present the session code form
-						Redirect("/confirm")(w, r)
+						alert.Message = template.HTML(fmt.Sprintf("The public key for \"%s\" was added successfully", email))
 					}
 				}
 			}
@@ -143,6 +171,10 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 						return
 					}
 
+					// session and person are established
+					s = session
+					p = person
+
 					// now add this key to the database for this person
 					pkErr := AddPublicKey(person, uploadedKey, KEY_SOURCE, pkFileHeader.Filename, stmt[database.PK_INSERT])
 					if pkErr != nil {
@@ -150,33 +182,19 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 						return
 					}
 
-					// find all this person's public keys
-					keys, keysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
-					if keysErr != nil {
-						alert.AsError(OTHER_ERROR)
-						return
-					}
-
-					// create the session, and ask for confirmation of the decrypted code
-					sessionCreateErr := CreateNewSession(person, keys, stmt[database.SESSION_INSERT])
-					if sessionCreateErr != nil {
-						alert.AsError(sessionCreateErr.Error())
-						return
-					} else {
-						// present the session code form
-						Redirect("/confirm")(w, r)
-					}
+					alert.Message = "Your public key was added successfully"
 				}
 			}
-
-			// session information is missing, or the request is otherwise invalid,
-			// so prompt with a new session form request
-			Redirect("/session")(w, r)
 		}
 
 		database.WithDatabase(db, fn)
 	}
 
-	page := &NewKeyPage{Title: TITLE_ADD_KEY, Alert: alert, Session: new(database.SESSION), Person: new(database.PERSON)}
+	if s == nil && p == nil {
+		s = new(database.SESSION)
+		p = new(database.PERSON)
+	}
+
+	page := &NewKeyPage{Title: TITLE_ADD_KEY, Alert: alert, Session: s, Person: p}
 	NEW_KEY_TEMPLATE.Execute(w, page)
 }
