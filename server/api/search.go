@@ -87,10 +87,11 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 						return
 					}
 
-					for _, key := range keys {
+					for i, key := range keys {
 						result := new(database.PUBLIC_KEY)
 						result.Key = key
 						result.Source = keyservers.MIT_SOURCE
+						result.Nickname = fmt.Sprintf("%s (%d)", keyservers.MIT_SOURCE, i)
 
 						results = append(results, result)
 					}
