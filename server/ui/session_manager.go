@@ -34,11 +34,12 @@ func CreateNewSession(person *database.PERSON, keys []*database.PUBLIC_KEY, sess
 		"Decrypt the attached file with your private key, and use it at the session form."}
 	attachments := []*emailer.EmailAttachment{&emailer.EmailAttachment{ContentType: emailer.TEXT_MIME, Contents: encryptedCode, FileName: uuid, FileLocation: uuid}}
 
-	var msgBuffer bytes.Buffer
-	EMAIL_TEMPLATE.Execute(&msgBuffer, &EmailMessage{Subject: sessionSubject, Heading: sessionSubject, Message: messageData})
+	var textBody, htmlBody bytes.Buffer
+	EMAIL_TEMPLATE.Execute(&htmlBody, &EmailMessage{Subject: sessionSubject, Message: messageData})
+	HTML_EMAIL_TEMPLATE.Execute(&htmlBody, &EmailMessage{Subject: sessionSubject, Heading: sessionSubject, Message: messageData})
 	return emailer.Send(sessionSubject,
-		msgBuffer.String(),
-		emailer.TEXT_MIME,
+		textBody.String(),
+		htmlBody.String(),
 		&emailer.EmailAddress{DisplayName: "TeamWork.io", Address: CONTACT_SENDER},
 		&emailer.EmailAddress{DisplayName: person.Email, Address: person.Email},
 		attachments)

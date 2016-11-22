@@ -53,10 +53,10 @@ type EmailAttachment struct {
 	EncodedFileData string
 	Boundary        string
 	// read content from a file
-	FileLocation    string
-	FileName        string
+	FileLocation string
+	FileName     string
 	// or provide it here
-	Contents        string
+	Contents string
 }
 
 // GenerateBoundary produces a random string that can be used for the email
@@ -131,7 +131,7 @@ func GenerateAttachment(attachment *EmailAttachment) (string, error) {
 
 // SendFromServer transmits the given message, with optional attachments,
 // via the defined mail server and port
-func SendFromServer(subject, message, messageType, server string, sender, recipient *EmailAddress, attachments []*EmailAttachment, port int) error {
+func SendFromServer(subject, messageText, messageHtml, server string, sender, recipient *EmailAddress, attachments []*EmailAttachment, port int) error {
 	var buf bytes.Buffer
 	boundary := GenerateBoundary()
 
@@ -151,11 +151,20 @@ func SendFromServer(subject, message, messageType, server string, sender, recipi
 	}
 	buf.WriteString(hdr)
 
-	body, bodyErr := GenerateBody(message, messageType, boundary)
+	body, bodyErr := GenerateBody(messageText, TEXT_MIME, boundary)
 	if bodyErr != nil {
 		return bodyErr
 	}
 	buf.WriteString(body)
+
+	// message body in html format is optional
+	if len(messageHtml) > 0 {
+		htmlBody, htmlBodyErr := GenerateBody(messageHtml, HTML_MIME, boundary)
+		if htmlBodyErr != nil {
+			return htmlBodyErr
+		}
+		buf.WriteString(htmlBody)
+	}
 
 	for _, a := range attachments {
 		a.Boundary = boundary
@@ -194,6 +203,6 @@ func SendFromServer(subject, message, messageType, server string, sender, recipi
 
 // Send transmits the given message, with optional attachments, via the
 // default mail server (localhost) and port (25)
-func Send(subject, message, messageType string, sender, recipient *EmailAddress, attachments []*EmailAttachment) error {
-	return SendFromServer(subject, message, messageType, MAIL_SERVER, sender, recipient, attachments, MAIL_PORT)
+func Send(subject, messageText, messageHtml string, sender, recipient *EmailAddress, attachments []*EmailAttachment) error {
+	return SendFromServer(subject, messageText, messageHtml, MAIL_SERVER, sender, recipient, attachments, MAIL_PORT)
 }

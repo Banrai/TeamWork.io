@@ -86,8 +86,11 @@ var (
 	DONATE_TEMPLATE_FILES = []string{"donate.html", "head.html", "alert.html", "modal.html", "navigation.html", "scripts.html"}
 	DONATE_TEMPLATE       *template.Template
 
-	EMAIL_TEMPLATE_FILES = []string{"email.html"}
+	EMAIL_TEMPLATE_FILES = []string{"email.txt"}
 	EMAIL_TEMPLATE       *template.Template
+
+	HTML_EMAIL_TEMPLATE_FILES = []string{"email.html"}
+	HTML_EMAIL_TEMPLATE       *template.Template
 
 	TEMPLATES_INITIALIZED = false
 )
@@ -159,6 +162,7 @@ func InitializeTemplates(folder string) {
 	NEW_KEY_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, NEW_KEY_TEMPLATE_FILES)...))
 	DONATE_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, DONATE_TEMPLATE_FILES)...))
 	EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, EMAIL_TEMPLATE_FILES)...))
+	HTML_EMAIL_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, HTML_EMAIL_TEMPLATE_FILES)...))
 	INDEX_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, INDEX_TEMPLATE_FILES)...))
 	HELP_TEMPLATE = template.Must(template.ParseFiles(TEMPLATE_LIST(folder, HELP_TEMPLATE_FILES)...))
 	TEMPLATES_INITIALIZED = true

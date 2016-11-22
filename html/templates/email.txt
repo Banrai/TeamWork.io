@@ -1,0 +1,14 @@
+{{ .Subject }}
+
+{{if .Heading}}
+{{.Heading}}
+
+{{end}}
+{{range $paragraph := .Message}}
+{{$paragraph}}
+
+{{end}}
+
+--
+TeamWork.io
+https://teamwork.io
