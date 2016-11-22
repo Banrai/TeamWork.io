@@ -22,7 +22,7 @@ const (
 	// templates for generating the message components
 	ADDRESS    = "\"{{.DisplayName}}\" <{{.Address}}>"
 	HEADERS    = "From: {{.Sender}}\r\nTo: {{.Recipient}}\r\nSubject: {{.Subject}}\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"{{.Boundary}}\"\r\n"
-	BODY       = "\r\n--{{.Boundary}}\r\nContent-Type: {{.ContentType}}\r\n\r\n{{.MessageBody}}"
+	BODY       = "\r\n--{{.Boundary}}\r\nContent-Type: multipart/related; boundary=\"{{.RelatedBoundary}}\"\r\n\r\n--{{.RelatedBoundary}}\r\nContent-Type: multipart/alternative; boundary=\"{{.AltBoundary}}\"\r\n\r\n--{{.AltBoundary}}\r\nContent-Type: text/plain\r\n\r\n{{.MessageText}}\r\n--{{.AltBoundary}}\r\nContent-Type: text/html\r\n\r\n{{.MessageHtml}}\r\n--{{.AltBoundary}}--\r\n--{{.RelatedBoundary}}--"
 	ATTACHMENT = "\r\n--{{.Boundary}}\r\nContent-Type: {{.ContentType}}; name=\"{{.FileLocation}}\"\r\nContent-Transfer-Encoding:base64\r\nContent-Disposition: attachment; filename=\"{{.FileName}}\"\r\n\r\n{{.EncodedFileData}}"
 
 	// message body mime types
@@ -43,9 +43,11 @@ type EmailHeaders struct {
 }
 
 type EmailBody struct {
-	ContentType string
-	MessageBody string
-	Boundary    string
+	MessageText     string
+	MessageHtml     string
+	Boundary        string
+	RelatedBoundary string
+	AltBoundary     string
 }
 
 type EmailAttachment struct {
@@ -89,9 +91,9 @@ func GenerateHeaders(sender, recipient, subject, boundary string) (string, error
 	return doc.String(), err
 }
 
-func GenerateBody(message, contentType, boundary string) (string, error) {
+func GenerateBody(messageText, messageHtml, boundary string) (string, error) {
 	var doc bytes.Buffer
-	context := &EmailBody{contentType, message, boundary}
+	context := &EmailBody{messageText, messageHtml, boundary, GenerateBoundary(), GenerateBoundary()}
 	t := template.Must(template.New("BODY").Parse(BODY))
 	err := t.Execute(&doc, context)
 	return doc.String(), err
@@ -151,20 +153,11 @@ func SendFromServer(subject, messageText, messageHtml, server string, sender, re
 	}
 	buf.WriteString(hdr)
 
-	body, bodyErr := GenerateBody(messageText, TEXT_MIME, boundary)
+	body, bodyErr := GenerateBody(messageText, messageHtml, boundary)
 	if bodyErr != nil {
 		return bodyErr
 	}
 	buf.WriteString(body)
-
-	// message body in html format is optional
-	if len(messageHtml) > 0 {
-		htmlBody, htmlBodyErr := GenerateBody(messageHtml, HTML_MIME, boundary)
-		if htmlBodyErr != nil {
-			return htmlBodyErr
-		}
-		buf.WriteString(htmlBody)
-	}
 
 	for _, a := range attachments {
 		a.Boundary = boundary
