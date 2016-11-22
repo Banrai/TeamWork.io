@@ -1,13 +1,9 @@
-{{ .Subject }}
+{{ .Subject }}{{if .Heading}}
 
-{{if .Heading}}{{.Heading}}
-
-{{end}}
-{{range $paragraph := .Message}}
+{{.Heading}}{{end}}{{range $paragraph := .Message}}
 {{$paragraph}}
 
 {{end}}
-
 --
 TeamWork.io
 https://teamwork.io

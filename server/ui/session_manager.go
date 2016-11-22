@@ -6,9 +6,11 @@ package ui
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"github.com/Banrai/TeamWork.io/server/cryptutil"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"github.com/Banrai/TeamWork.io/server/emailer"
+	"time"
 )
 
 // Create a new session for this Person and email them the corresponding session code to decrypt
@@ -27,12 +29,12 @@ func CreateNewSession(person *database.PERSON, keys []*database.PUBLIC_KEY, sess
 	}
 
 	// send email with encryped code, and notification to html template
-	uuid := cryptutil.GenerateUUID(cryptutil.UndashedUUID)
+	sessionFilename := fmt.Sprintf("TeamWork.io-session-%s.asc", time.Now().UTC().Format(time.RFC3339))
 	sessionSubject := "Your TeamWork.io session"
 	messageData := []string{
 		"Here is your TeamWork.io session information.",
 		"Decrypt the attached file with your private key, and use it at the session form."}
-	attachments := []*emailer.EmailAttachment{&emailer.EmailAttachment{ContentType: emailer.TEXT_MIME, Contents: encryptedCode, FileName: uuid, FileLocation: uuid}}
+	attachments := []*emailer.EmailAttachment{&emailer.EmailAttachment{ContentType: emailer.TEXT_MIME, Contents: encryptedCode, FileName: sessionFilename}}
 
 	var textBody, htmlBody bytes.Buffer
 	EMAIL_TEMPLATE.Execute(&textBody, &EmailMessage{Subject: sessionSubject, Message: messageData})
