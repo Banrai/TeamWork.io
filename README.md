@@ -12,7 +12,16 @@ Contributions, both in the form of [code suggestions](https://github.com/Banrai/
 
 TeamWork.io is an encrypted message hub, a public bulletin board where you can post hidden messages to anyone, both individuals, or teams of people simultaneously, readable by only you and them.
 
-It uses some of the basic ideas of [public key cryptography](http://www.pgpi.org/doc/pgpintro/#p9): if you know someone's public key, you can generate a message that only they can read, and that it's also possible to encrypt a message for a specific group of people, decipherable only by members of that group. 
+It uses some of the basic ideas of [public key cryptography](http://www.pgpi.org/doc/pgpintro/#p9): if you know someone's public key, you can generate a message that only they can read, and that it's also possible to encrypt a message for a specific group of people, decipherable only by members of that group.
+
+## Installation
+
+To clone and run this service on private servers, follow these instructions:
+
+1. Install the [server components and build](server/README.md) 
+2. Install the [database and schema](server/database/README.md)
+3. Run the server (using the provided [LSBInitScript](server/init.d/README.md) is recommended)
+4. Install a web server (optional), such as [nginx](http://nginx.org/) or [apache](http://httpd.apache.org/), to manage the requests to the TeamWork server
 
 ## Acknowledgements
 
