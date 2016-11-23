@@ -93,4 +93,4 @@ Usage of ./TeamWorkServer:
     	Dictionary file (for generating random session codes) (default "/usr/share/dict/words")
 ```
 
-Saving these in an [LSBInitScript](../init.d/README.md) and running from <tt>/etc/init.d</tt> is recommended.
+Saving these in an [LSBInitScript](init.d/README.md) and running from <tt>/etc/init.d</tt> is recommended.
