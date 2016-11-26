@@ -28,25 +28,67 @@
 	 <!-- content (inner) -->
 
 	 <div class="row">
-	   <div class="col-lg-6">
+	   <div class="col-lg-8">
 	     <h3><i class="fa fa-circle-o help" aria-hidden="true"></i> How to Create a Public Key</h3>
 	     <p>
 	       Use <a href="https://www.gnupg.org/" target="_blank">GnuPG</a> to generate a set of public and private keys, with the <a href="https://gnupg.org/gph/en/manual/c14.html#AEN25" target="_blank">gpg --gen-key</a> command.
-	       Making subkeys, <a href="https://alexcabal.com/creating-the-perfect-gpg-keypair/" target="_blank">as described here</a>, is recommended.</p>
-	     <p>
-	       <a href="https://gnupg.org/gph/en/manual/x56.html" target="_blank">Export the public key</a> with the <a href="https://gnupg.org/gph/en/manual/r1290.html" target="_blank">armor</a> option, to create a plain ASCII text version.
 	     </p>
 	     <p>
-	       The ASCII-armored text file is what you should use to <a href="/upload">upload</a> to this site.
+	       Make sure to choose at least 4096 bits for the keysize, and use a reasonable expiration interval, as in this example:
+	       <pre class="terminal">$ gpg --gen-key
+gpg (GnuPG) 1.4.18; Copyright (C) 2014 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Please select what kind of key you want:
+   (1) RSA and RSA (default)
+   (2) DSA and Elgamal
+   (3) DSA (sign only)
+   (4) RSA (sign only)
+Your selection? 1
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (2048) 4096
+Requested keysize is 4096 bits
+Please specify how long the key should be valid.
+         0 = key does not expire
+      <n>  = key expires in n days
+      <n>w = key expires in n weeks
+      <n>m = key expires in n months
+      <n>y = key expires in n years
+Key is valid for? (0) 6m
+Key expires at Wed 24 May 2017 07:33:40 PM EDT
+Is this correct? (y/N) y
+
+You need a user ID to identify your key; the software constructs the user ID
+from the Real Name, Comment and Email Address in this form:
+    "Heinrich Heine (Der Dichter) <heinrichh@duesseldorf.de>"
+
+Real name: Sherlock Holmes
+E-mail address: sholmes@example.org
+Comment: 
+You selected this USER-ID:
+    "Sherlock Holmes <sholmes@example.org>
+
+Change (N)ame, (C)omment, (E)-mail or (O)kay/(Q)uit? o
+You need a Passphrase to protect your secret key.
+<type your passphrase></pre>
 	     </p>
+	     <p><a href="https://gnupg.org/gph/en/manual/x56.html" target="_blank">Export the public key</a> with the <a href="https://gnupg.org/gph/en/manual/r1290.html" target="_blank">armor</a> option, to create a plain ASCII text version:
+	       <pre class="terminal">$ gpg --export --armor sholmes@example.org > sholmes@example.org.public.asc</pre>
+	     </p>
+	     <p>
+	       The ASCII-armored text file (&quot;<i>sholmes@example.org.public.asc</i>&quot; in the example) is what you should use to <a href="/upload">upload</a> to this site.
 	     <p>
 	       <strong><i>Never</i></strong> share your private keys with anyone.
+	     </p>
+	     <p>
+	       Making subkeys, along with some of the other advice <a href="https://alexcabal.com/creating-the-perfect-gpg-keypair/" target="_blank">described here</a>, is recommended.
 	     </p>
 	   </div>
 	 </div>
 
 	 <div class="row">
-	   <div class="col-lg-6">
+	   <div class="col-lg-8">
 	     <h3><i class="fa fa-circle-o help" aria-hidden="true"></i> Obtaining and Running GnuPG</h3>
 	     <p>
 	       GnuPG is <a href="https://www.gnupg.org/download/index.html" target="_blank">available for multiple operating systems</a>, and there are also some good guides here:
