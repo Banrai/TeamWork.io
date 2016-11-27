@@ -61,17 +61,17 @@ Is this correct? (y/N) y
 
 You need a user ID to identify your key; the software constructs the user ID
 from the Real Name, Comment and Email Address in this form:
-    "Heinrich Heine (Der Dichter) <heinrichh@duesseldorf.de>"
+    "Heinrich Heine (Der Dichter) &lt;heinrichh@duesseldorf.de&gt;"
 
 Real name: Sherlock Holmes
 E-mail address: sholmes@example.org
 Comment: 
 You selected this USER-ID:
-    "Sherlock Holmes <sholmes@example.org>
+    "Sherlock Holmes &lt;sholmes@example.org&gt;
 
 Change (N)ame, (C)omment, (E)-mail or (O)kay/(Q)uit? o
 You need a Passphrase to protect your secret key.
-<type your passphrase></pre>
+&lt;type your passphrase&gt;</pre>
 	     </p>
 	     <p><a href="https://gnupg.org/gph/en/manual/x56.html" target="_blank">Export the public key</a> with the <a href="https://gnupg.org/gph/en/manual/r1290.html" target="_blank">armor</a> option, to create a plain ASCII text version:
 	       <pre class="terminal">$ gpg --export --armor sholmes@example.org > sholmes@example.org.public.asc</pre>
