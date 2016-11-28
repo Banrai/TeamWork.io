@@ -103,6 +103,39 @@ You need a Passphrase to protect your secret key.
 	     </p>
 	   </div>
 	 </div>
+
+	 <div class="row">
+	   <div class="col-lg-8">
+	     <h3 id="decrypt-session"><i class="fa fa-circle-o help" aria-hidden="true"></i> How to use the session information</h3>
+	     <p>
+	       <a href="/session">Creating a new session</a> results in an email with the subject line &quot;<strong>Your TeamWork.io session</strong>&quot; and an armored text attachment.
+	     </p>
+	     <p>
+	       Decrypting the attached message results in a list of six random words, which need to be copied into the <a href="/confirm">session confirmation form</a> to take effect.
+	     </p>
+	     <p>
+	       Use the <a href="https://gnupg.org/gph/en/manual/r669.html" target="_blank">gpg --decrypt</a> command, as in this example (the trailing awk statement just adds a few carriage returns so that the decryption result can be read more easily):
+	       <pre class="terminal">$ gpg --decrypt ~/Downloads/TeamWork.io-session-2016-11-27T19_07_21Z.asc | awk -F/ '{printf "%s\n\n", $NF}'
+
+You need a passphrase to unlock the secret key for
+user: "Sherlock Holmes &lt;sholmes@example.org&gt;
+4096-bit RSA key, ID 17748D44, created 2016-10-15 (main key ID DCCEC2A5)
+
+gpg: encrypted with 4096-bit RSA key, ID 17748D44, created 2016-10-15
+      "Sherlock Holmes &lt;sholmes@example.org&gt;
+versifies resume's wees portentously mollify Shasta's</pre>
+	     </p>
+	     <p>
+	       For this example,
+	     </p>
+	     <p>
+	       <strong>versifies resume's wees portentously mollify Shasta's</strong>
+	     </p>
+	     <p>
+	       are the words to copy into the <a href="/confirm">session confirmation form</a>.
+	     </p>
+	   </div>
+	 </div>
 	 
 	 <!-- /content (inner) -->
 
