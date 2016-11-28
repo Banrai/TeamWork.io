@@ -67,7 +67,7 @@ Real name: Sherlock Holmes
 E-mail address: sholmes@example.org
 Comment: 
 You selected this USER-ID:
-    "Sherlock Holmes &lt;sholmes@example.org&gt;
+    "Sherlock Holmes &lt;sholmes@example.org&gt;"
 
 Change (N)ame, (C)omment, (E)-mail or (O)kay/(Q)uit? o
 You need a Passphrase to protect your secret key.
@@ -118,11 +118,13 @@ You need a Passphrase to protect your secret key.
 	       <pre class="terminal">$ gpg --decrypt ~/Downloads/TeamWork.io-session-2016-11-27T19_07_21Z.asc | awk -F/ '{printf "%s\n\n", $NF}'
 
 You need a passphrase to unlock the secret key for
-user: "Sherlock Holmes &lt;sholmes@example.org&gt;
+user: "Sherlock Holmes &lt;sholmes@example.org&gt;"
 4096-bit RSA key, ID 17748D44, created 2016-10-15 (main key ID DCCEC2A5)
 
+Enter passphrase: &lt;type your passphrase&gt;
+
 gpg: encrypted with 4096-bit RSA key, ID 17748D44, created 2016-10-15
-      "Sherlock Holmes &lt;sholmes@example.org&gt;
+      "Sherlock Holmes &lt;sholmes@example.org&gt;"
 versifies resume's wees portentously mollify Shasta's</pre>
 	     </p>
 	     <p>
@@ -133,6 +135,41 @@ versifies resume's wees portentously mollify Shasta's</pre>
 	     </p>
 	     <p>
 	       are the words to copy into the <a href="/confirm">session confirmation form</a>.
+	     </p>
+	   </div>
+	 </div>
+
+	 <div class="row">
+	   <div class="col-lg-8">
+	     <h3 id="decrypt-message"><i class="fa fa-circle-o help" aria-hidden="true"></i> How to decrypt a message</h3>
+	     <p>
+	       Similar to the process for <a href="#decrypt-session">decrypting the session information</a>, use the <a href="https://gnupg.org/gph/en/manual/r669.html" target="_blank">gpg --decrypt</a> command on the downloaded message.
+	     </p>
+	     <p>
+	       For long messages, skipping the trailing awk is advisable, since it adds unwanted newlines in between, though the end of the message will get jammed up against the next prompt, as in this example:
+	     </p>
+	     <p>
+	       <pre class="terminal">$ gpg --decrypt ~/Downloads/0450e6fc-fd68-4c4c-9c5a-9d68c80a57e9.asc 
+
+You need a passphrase to unlock the secret key for
+user: "Sherlock Holmes &lt;sholmes@example.org&gt;"
+4096-bit RSA key, ID 17748D44, created 2016-10-15 (main key ID DCCEC2A5)
+
+Enter passphrase: &lt;type your passphrase&gt;
+
+gpg: encrypted with 4096-bit RSA key, ID 17748D44, created 2016-10-15
+      "Sherlock Holmes &lt;sholmes@example.org&gt;"
+Hello Watson,
+This is a secret message for you.
+Sherlock$</pre>
+	     </p>
+	     <p>
+	       Thus the decrypted message text for this example is:
+	     </p>
+	     <p>
+	       <strong>Hello Watson,<br />
+This is a secret message for you.<br />
+Sherlock</strong>
 	     </p>
 	   </div>
 	 </div>
