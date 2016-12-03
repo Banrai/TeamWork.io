@@ -167,9 +167,9 @@ func RetrieveMessages(stmt *sql.Stmt, uniqueId string, limit, offset int64) ([]*
 
 // Fetch the first unique line of the armored message as a preview
 func (m *MESSAGE) GetPreview() string {
-	for _, line := range strings.Split(m.Message, "\r\n") {
+	for i, line := range strings.Split(m.Message, "\r\n") {
 		l := len(line)
-		if l > 0 {
+		if l > 0 && i > 4 {
 			if !strings.HasPrefix(line, "-----BEGIN") && !strings.HasPrefix(line, "Version:") && !strings.HasPrefix(line, "Comment:") {
 				until := 35
 				if l < until {
