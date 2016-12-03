@@ -71,10 +71,10 @@ Usage of ./TeamWorkServer:
     	Does the database use SSL mode? (default true)
   -dbUser string
     	The database user (default "user")
-  -extPort int
-    	The external server port (default 443)
   -host string
-    	The hostname or IP address of the server (default "teamwork.io")
+    	The (externally-facing) name of the server (default "teamwork.io")
+  -ip string
+    	The hostname or IP address of the server (default "localhost")
   -port int
     	The server port (default 8080)
   -ssl
