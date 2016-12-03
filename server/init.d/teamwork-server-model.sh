@@ -16,8 +16,8 @@ case "$1" in
       -dbUser=teamworkio \
       -dbPass=dbPassGoesHere \
       -dbSSL=true \
-      -host=127.0.0.1 \
-      -extPort=8001 \
+      -host=TeamWork.io \
+      -ip=127.0.0.1 \
       -port=8001 \
       -ssl=true \
       -templates=/opt/src/github.com/Banrai/TeamWork.io/html/templates \
