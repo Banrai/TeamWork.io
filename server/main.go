@@ -6,7 +6,6 @@ package main
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"github.com/Banrai/TeamWork.io/server/api"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"github.com/Banrai/TeamWork.io/server/ui"
@@ -16,11 +15,11 @@ import (
 
 const (
 	// default server definitions
-	server       = "teamwork.io"
-	port         = 8080
-	useSSL       = true
-	externalPort = 443
-	templates    = "/opt/data/html/templates"
+	hostname  = "teamwork.io"
+	server    = "localhost"
+	port      = 8080
+	useSSL    = true
+	templates = "/opt/data/html/templates"
 
 	// default database coordinates
 	DBName = "db"
@@ -40,15 +39,15 @@ const (
 
 func main() {
 	var (
-		dbName, dbUser, dbPass, serverHost, wordsFile, templatesFolder, staticOutputFolder, stripePK, stripeSK string
-		serverPort, externalServerPort                                                                         int
-		dbSSLMode, useServerSSL, makeStaticFiles                                                               bool
+		dbName, dbUser, dbPass, hostName, serverHost, wordsFile, templatesFolder, staticOutputFolder, stripePK, stripeSK string
+		serverPort                                                                                                       int
+		dbSSLMode, useServerSSL, makeStaticFiles                                                                         bool
 	)
 
 	// get server settings from the command line args
-	flag.StringVar(&serverHost, "host", server, "The hostname or IP address of the server")
+	flag.StringVar(&hostName, "host", hostname, "The (externally-facing) name of the server")
+	flag.StringVar(&serverHost, "ip", server, "The hostname or IP address of the server")
 	flag.IntVar(&serverPort, "port", port, "The server port")
-	flag.IntVar(&externalServerPort, "extPort", externalPort, "The external server port")
 	flag.BoolVar(&useServerSSL, "ssl", useSSL, "Does the server use SSL?")
 	flag.StringVar(&templatesFolder, "templates", templates, "Path to html templates and static resources")
 
@@ -83,14 +82,10 @@ func main() {
 		buffer.WriteString("s")
 	}
 	buffer.WriteString("://")
-	buffer.WriteString(serverHost)
-	if !useServerSSL || externalServerPort != serverPort {
-		// the port matters only if it is non-standard
-		// for ssl or if not using ssl at all
-		buffer.WriteString(fmt.Sprintf(":%d", externalServerPort))
-	}
-	serverLink := buffer.String()
-	log.Println(serverLink) // for now
+	buffer.WriteString(hostName)
+
+	serverLink := make([]interface{}, 1)
+	serverLink[0] = buffer.String()
 
 	statics := map[string]http.Handler{}
 	statics["/css/"] = ui.StaticFolder("css", templatesFolder)
@@ -107,7 +102,7 @@ func main() {
 	handlers["/confirm"] = ui.MakeHTMLHandler(ui.ConfirmSession, coords)
 	handlers["/upload"] = ui.MakeHTMLHandler(ui.UploadKey, coords)
 	handlers["/posts"] = ui.MakeHTMLHandler(ui.DisplayPosts, coords)
-	handlers["/download"] = ui.MakeHTMLHandler(ui.DownloadMessage, coords)
+	handlers["/download"] = ui.MakeHTMLHandler(ui.DownloadMessage, coords, serverLink[0])
 
 	// payment processing requires some additional parameters
 	stripeVals := make([]interface{}, 2)

@@ -18,13 +18,22 @@ const NO_SUCH_MESSAGE = "There is no such message among the list of available po
 // Lookup and stream the given message back to the client
 func DownloadMessage(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
 	var (
-		m *database.MESSAGE
-		s *database.SESSION
-		p *database.PERSON
-		d []*database.MESSAGE_DIGEST
+		m      *database.MESSAGE
+		s      *database.SESSION
+		p      *database.PERSON
+		d      []*database.MESSAGE_DIGEST
+		domain string
 	)
 	alert := new(Alert)
 	messageFound := false
+
+	// get the server domain
+	for i, k := range opts {
+		switch i {
+		case 0:
+			domain = fmt.Sprintf("%v", k)
+		}
+	}
 
 	messageId := r.URL.Query().Get("message")
 
@@ -116,10 +125,17 @@ func DownloadMessage(w http.ResponseWriter, r *http.Request, db database.DBConne
 
 	if messageFound {
 		// send its contents to the client
+		var contents string
+		if len(domain) > 0 {
+			contents = strings.Replace(m.Message, "http://openpgpjs.org", fmt.Sprintf("%s using openpgpjs.org", domain), 1)
+		} else {
+			contents = m.Message
+		}
+
 		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s.asc", messageId))
 		w.Header().Set("Content-Type", "text/plain")
-		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(m.Message)))
-		io.Copy(w, bytes.NewBufferString(m.Message))
+		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(contents)))
+		io.Copy(w, bytes.NewBufferString(contents))
 	} else {
 		// go back to the list of posts
 		alert.AsError(NO_SUCH_MESSAGE)
