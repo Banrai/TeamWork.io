@@ -132,3 +132,46 @@ func SearchPersonPublicKeys(r *http.Request, db database.DBConnection) string {
 		return string(result)
 	}
 }
+
+// Respond to an ajax request: lookup the keybase user name and fetch the
+// corresponding public key as a json message (this search is sessionless)
+func SearchKeyBase(r *http.Request, db database.DBConnection) string {
+	// the result is a json representation of the list of public keys found
+	results := make([]*database.PUBLIC_KEY, 0)
+
+	// this function only responds to POST requests
+	if "POST" == r.Method {
+		r.ParseForm()
+
+		// the keybase username is the search parameter
+		usr, usrExists := r.PostForm["kbUser"]
+		if !usrExists {
+			return GenerateSimpleMessage(INVALID_REQUEST, MISSING_PARAMETER)
+		}
+
+		searchUserName := strings.TrimSpace(strings.Join(usr, ""))
+		if 0 == len(searchUserName) {
+			return GenerateSimpleMessage(INVALID_REQUEST, "Not a valid user name")
+		}
+
+		publicKey, err := keyservers.KeyBaseSearch(searchUserName)
+		if err != nil {
+			return GenerateSimpleMessage(INVALID_REQUEST, err.Error())
+		}
+
+		// for compatibility with other ajax search, return it as a
+		// database.PUBLIC_KEY object, even though it is not being
+		// saved in the database here yet
+		result := new(database.PUBLIC_KEY)
+		result.Key = publicKey
+		result.Source = keyservers.KEYBASE_SOURCE
+
+		results = append(results, result)
+	}
+
+	result, err := json.Marshal(results)
+	if err != nil {
+		return GenerateSimpleMessage(INVALID_REQUEST, err.Error())
+	}
+	return string(result)
+}

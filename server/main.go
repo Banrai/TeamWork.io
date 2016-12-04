@@ -117,6 +117,13 @@ func main() {
 		api.Respond("application/json", "utf-8", lookup)(w, r)
 	}
 
+	handlers["/searchKeyBase"] = func(w http.ResponseWriter, r *http.Request) {
+		lookup := func(w http.ResponseWriter, r *http.Request) string {
+			return api.SearchKeyBase(r, coords)
+		}
+		api.Respond("application/json", "utf-8", lookup)(w, r)
+	}
+
 	if makeStaticFiles {
 		ui.GenerateStaticFiles(templatesFolder, staticFolder)
 	} else {

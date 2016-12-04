@@ -12,6 +12,8 @@ import (
 
 // For accessing public keys from KeyBase (https://keybase.io/)
 
+const KEYBASE_SOURCE = "https://keybase.io/"
+
 // Lookup the public key for the given username, and return it as a string,
 // if it is valid
 func KeyBaseSearch(userName string) (string, error) {
