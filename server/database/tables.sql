@@ -25,7 +25,7 @@ CREATE TABLE message (
 	message      text NOT NULL,
 	date_posted  timestamp with time zone DEFAULT (now() at time zone 'UTC'),
 	date_expires timestamp with time zone,
-	UNIQUE(person_id, message, date_posted)
+	UNIQUE(person_id, date_posted)
 );
 
 CREATE TABLE message_recipient (

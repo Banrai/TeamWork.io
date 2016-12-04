@@ -11,21 +11,26 @@ import (
 	"strings"
 )
 
+type Recipient struct {
+	Person *database.PERSON
+	Keys   []*database.PUBLIC_KEY
+}
+
 type NewPostPage struct {
 	Title      string
 	Alert      *Alert
 	Session    *database.SESSION
 	Person     *database.PERSON
-	Recipients []*database.PERSON
 	Keys       []*database.PUBLIC_KEY
+	Recipients []*Recipient
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnection, opts ...interface{}) {
 	var (
 		s *database.SESSION
 		p *database.PERSON
-		x []*database.PERSON
 		k []*database.PUBLIC_KEY
+		x []*Recipient
 		d []*database.MESSAGE_DIGEST
 	)
 	alert := new(Alert)
@@ -97,7 +102,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 					k = keys
 
 					// see if there are any predefined recipients in the get string
-					preRecipients := make([]*database.PERSON, 0)
+					preRecipients := make([]*Recipient, 0)
 					if recips, recipsExist := values["recipient"]; recipsExist {
 						for _, recipId := range recips {
 							if recipId != person.Id {
@@ -106,10 +111,8 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 									if len(recip.Id) > 0 && recip.Enabled {
 										rKeys, rKeyErr := recip.LookupPublicKeys(stmt[database.PK_LOOKUP])
 										if rKeyErr == nil { // skip any people with invalid keys
-											preRecipients = append(preRecipients, recip)
-											for _, rKey := range rKeys {
-												k = append(k, rKey)
-											}
+											recipient := &Recipient{Person: recip, Keys: rKeys}
+											preRecipients = append(preRecipients, recipient)
 										}
 									}
 								}
@@ -187,7 +190,7 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db database.DBConnectio
 			ALL_POSTS_TEMPLATE.Execute(w, posts)
 		} else {
 			// go back to the post-message form
-			postPage := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Recipients: x, Keys: k}
+			postPage := &NewPostPage{Title: TITLE_ADD_POST, Alert: alert, Session: s, Person: p, Keys: k, Recipients: x}
 			NEW_POST_TEMPLATE.Execute(w, postPage)
 		}
 	}

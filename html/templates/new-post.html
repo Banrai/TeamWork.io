@@ -19,40 +19,43 @@
        <div class="col-xs-10 col-md-10">
 
 	 <!-- content (inner) -->
+	 <form id="msg" method="post" action="/addpost">
+	   {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
+	   {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
+	   <div class="form-group">
+	     <div id="recipient-team" style="padding-top:20px">
+	       <select id="recipients" name="recipients" class="chosen-select" data-placeholder="Pick one or more recipients" multiple="multiple" tabindex="4">
+		 <option value=""></option>
+		 {{range $recipient := .Recipients}}
+		 <option value="{{$recipient.Person.Email}}" selected="selected">{{$recipient.Person.Email}}</option>
+		 {{end}}
+	       </select>
+	     </div>
+	   </div>
 
-	     <form id="msg" method="post" action="/addpost">
-	       {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
-	       {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
-	       <div class="form-group">
-		 <div id="recipient-team" style="padding-top:20px">
-		   <select id="recipients" name="recipients" class="chosen-select" data-placeholder="Add a person" multiple="multiple" tabindex="4">
-		     <option value=""></option>
-		     {{range $recipient := .Recipients}}
-		     <option value="{{$recipient.Email}}" selected="selected">{{$recipient.Email}}</option>
-		     {{end}}
-		   </select>
-		 </div>
-	       </div>
-	       <div class="form-group">
-		 <a id="add-recipient" href="#recipient" class="btn btn-default btn-sm toggle"><i class="fa fa-user-plus" aria-hidden="true"></i> Add a person</a>
-	       </div>
-	       <div class="form-group">
-		 <input type="email" class="form-control" id="recipient" placeholder="first.last@example.org">
-		 <p class="help-block" id="recipient-search">
-		   <i class="fa fa-spinner fa-pulse fa-fw"></i> searching ...
-		   <span class="sr-only">searching ...</span>
-		 </p>
-	       </div>
-	       <div class="form-group">
-		 <textarea class="form-control" rows="3" id="message" name="message" placeholder="Your Message"></textarea>
-		 <p class="help-block"><input id="enc" type="checkbox"> <span style="color: red"><i class="fa fa-lock"></i> Encrypt</span></p>
-	       </div>
-	       <div class="form-group">
-		 <button id="post" type="submit" class="btn btn-success"><i class="fa fa-commenting" aria-hidden="true"></i> Post</button>
-		 <button id="reset" type="reset" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i> Reset</button>
-	       </div>
-	     </form>
+	   <div class="form-group">
+	     <a id="add-recipient" href="#recipient" class="btn btn-default btn-sm toggle"><i class="fa fa-user-plus" aria-hidden="true"></i> Add a person</a>
+	   </div>
 
+	   <div class="form-group">
+	     <input type="email" class="form-control" id="recipient" placeholder="first.last@example.org">
+	     <p class="help-block" id="recipient-search" style="display:none">
+	       <i class="fa fa-spinner fa-pulse fa-fw"></i> searching ...
+	       <span class="sr-only">searching ...</span>
+	     </p>
+	   </div>
+
+	   <div class="form-group">
+	     <textarea class="form-control" rows="3" id="message" name="message" placeholder="Your Message"></textarea>
+	     <p class="help-block"><input id="enc" type="checkbox"> <span style="color: red"><i class="fa fa-lock"></i> Encrypt</span></p>
+	   </div>
+
+	   <div class="form-group">
+	     <button id="post" type="submit" class="btn btn-success"><i class="fa fa-commenting" aria-hidden="true"></i> Post</button>
+	     <button id="reset" type="reset" class="btn btn-default"><i class="fa fa-refresh" aria-hidden="true"></i> Reset</button>
+	   </div>
+	   
+	 </form>
 	 <!-- /content (inner) -->
 
        </div>
@@ -66,16 +69,35 @@
      <!-- author public keys -->
      {{range $key := .Keys}}
      {{if $key.Key}}
-     <div class="PK" style="display:none;">
+     <div class="PK" id="{{$key.Id}}" style="display:none;">
 {{$key.Key | html}}</div>
      {{end}}
      {{end}}
      <!-- /author public keys -->
 
+     <!-- recipient public keys -->
+     {{range $recipient := .Recipients}}
+     {{range $key := $recipient.Keys}}
+     {{if $key.Key}}
+     <div class="PK" id="{{$key.Id}}" style="display:none;">
+{{$key.Key | html}}</div>
+     {{end}}
+     {{end}}
+     {{end}}
+     <!-- /recipient public keys -->
+
    </div>
    <!-- /container -->
 
 {{template "scripts.html" .}}
+   <script type="text/javascript">
+TEAMWORK.authorKeys = [{{range $i, $key := .Keys}}{{if $i}},{{end}}{{$key.Id}}{{end}}];
+TEAMWORK.keys = {};
+{{range $recipient := .Recipients}}
+{{range $key := $recipient.Keys}}TEAMWORK.keys[{{$key.Id}}] = {{$recipient.Person.Email}};
+{{end}}
+{{end}}
+   </script>
    <script src="/js/modal.min.js"></script>
    <script src="/js/openpgp.min.js"></script>
    <script src="/js/post.min.js"></script>
