@@ -38,7 +38,7 @@ TEAMWORK.clearSelectedRecipients = function () {
 
 TEAMWORK.addMoreRecipients = function () {
     $('#recipient-team').show();
-    $('#recipient').hide();
+    $('#find-recipient').hide();
     $('#add-recipient').show();
     $('#message').focus();
 }
@@ -55,7 +55,7 @@ TEAMWORK.reset = function () {
     } else {
 	$('#recipient-team').hide();
 	$('#add-recipient').hide();
-	$('#recipient').show();
+	$('#find-recipient').show();
 	$('#recipient').val('');
 	$('#recipient').focus();
     }	
@@ -76,77 +76,90 @@ $(function(){
 
     $('.chosen-select').chosen({width: '100%'});
     TEAMWORK.reset();
-    
+
+    function searchForRecipient (email) {
+	$('#recipient-search').show();
+	$.post("/searchPublicKeys",
+	       { email:     email.toLowerCase(),
+		 personId:  TEAMWORK.person,
+		 sessionId: TEAMWORK.session})
+	    .done(function(reply) {
+		if( reply["msg"] && reply["err"] ) {
+		    TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
+		} else if( reply["msg"] ) {
+		    TEAMWORK.showError(reply["msg"]);
+		} else if( reply["err"] ) {
+		    TEAMWORK.showError(reply["err"]);
+		} else {
+		    if( reply.length > 0 ) {
+			$('#recipient-team').show();
+		    } else {
+			// no keys found, so prompt for upload
+			TEAMWORK.showConfirmModal("Sorry", "We could not find any public keys for "+email, "But if you have a copy, you can click 'Add Public Key' to add it yourself", "/upload", "Add Public Key");
+		    }
+		    $.each(reply, function (i, d) {
+			if( d["key"] ) {
+			    // insert new dom PK and recipients entry
+			    $("body").append( $("<div class='PK' id='"+d["id"]+"' style='display:none;'>"+ d["key"] +"</div>") );
+			    TEAMWORK.keys[d["id"]] = email;
+			    if( !TEAMWORK.confirmRecipient(email) ) {
+				// some people have multiple keys per email, so don't repeat them in the selection
+				$('#recipients').append("<option value='"+email+"' selected='selected'>"+email+"</option>");
+			    }
+			    $('#recipients').trigger("chosen:updated");
+			}
+		    });
+		}
+		$('#recipient-search').hide();
+		$('#recipient').attr('disabled', false);
+		$('#recipient').val('');
+		TEAMWORK.reset();
+	    })
+	    .fail(function(reply) {
+		if( reply["msg"] && reply["err"] ) {
+		    TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
+		} else if( reply["msg"] ) {
+		    TEAMWORK.showError(reply["msg"]);
+		} else if( reply["err"] ) {
+		    TEAMWORK.showError(reply["err"]);
+		} else {
+		    // something bad happened
+		    TEAMWORK.showError("");
+		}
+		$('#recipient-search').hide();
+		$('#recipient').attr('disabled', false);
+		$('#recipient').val('');
+		TEAMWORK.reset();
+	    });
+
+	return false;
+    }
+
+    $('#find').click(function(event) {
+	event.preventDefault();
+
+	$('#recipient').attr('disabled', true);
+	return searchForRecipient($('#recipient').val());
+    });
+
     $('#recipient').keypress(function (e) {
 	if( 13 === e.which ) {
 	    var elem  = $(this),
 		email = elem.val();
 	    
 	    elem.attr('disabled', true);
-	    $('#recipient-search').show();
-
-	    $.post("/searchPublicKeys",
-		   { email:     email.toLowerCase(),
-		     personId:  TEAMWORK.person,
-		     sessionId: TEAMWORK.session})
-		.done(function(reply) {
-		    if( reply["msg"] && reply["err"] ) {
-			TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
-		    } else if( reply["msg"] ) {
-			TEAMWORK.showError(reply["msg"]);
-		    } else if( reply["err"] ) {
-			TEAMWORK.showError(reply["err"]);
-		    } else {
-			if( reply.length > 0 ) {
-			    $('#recipient-team').show();
-			} else {
-			    // no keys found, so prompt for upload
-			    TEAMWORK.showConfirmModal("Sorry", "We could not find any public keys for "+email, "But if you have a copy, you can click 'Upload Public Key' to add it yourself", "/upload", "Upload Public Key");
-			}
-			$.each(reply, function (i, d) { 
-			    if( d["key"] ) { 
-				// insert new dom PK and recipients entry
-				$("body").append( $("<div class='PK' id='"+d["id"]+"' style='display:none;'>"+ d["key"] +"</div>") );
-				TEAMWORK.keys[d["id"]] = email;
-				if( !TEAMWORK.confirmRecipient(email) ) {
-				    // some people have multiple keys per email, so don't repeat them in the selection
-				    $('#recipients').append("<option value='"+email+"' selected='selected'>"+email+"</option>");
-				}
-				$('#recipients').trigger("chosen:updated");
-			    }
-			});
-		    }
-		    $('#recipient-search').hide();
-		    elem.attr('disabled', false);
-		    elem.val('');
-		})
-		.fail(function(reply) {
-		    if( reply["msg"] && reply["err"] ) {
-			TEAMWORK.showError(reply["msg"] + ": "+ reply["err"]);
-		    } else if( reply["msg"] ) {
-			TEAMWORK.showError(reply["msg"]);
-		    } else if( reply["err"] ) {
-			TEAMWORK.showError(reply["err"]);
-		    } else {
-			// something bad happened
-			TEAMWORK.showError("");
-		    }
-		    $('#recipient-search').hide();
-		    elem.attr('disabled', false);
-		    elem.val('');
-		});
-
-	    TEAMWORK.addMoreRecipients();
-	    return false;
+	    return searchForRecipient(email);
 	}
     });
     
     $('a.toggle').click(function(event){
         event.preventDefault();
         var elem     = $(this),
-	    toggleId = '#'+elem.attr('href').split('#')[1];
+	    href     = elem.attr('href'),
+	    toggleId = '#'+href.split('#')[1],
+	    inputId  = '#'+href.split('#')[2];
         $(toggleId).toggle(300);
-        $(toggleId).focus();
+        $(inputId).focus();
         elem.toggle();
     });
 
