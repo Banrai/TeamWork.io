@@ -106,12 +106,18 @@ You need a Passphrase to protect your secret key.
 
 	 <div class="row">
 	   <div class="col-lg-8">
-	     <h3 id="decrypt-session"><i class="fa fa-circle-o help" aria-hidden="true"></i> How to use the session information</h3>
+	     <h3 id="decrypt-session"><i class="fa fa-circle-o help" aria-hidden="true"></i> How to login: session challenges instead of passwords</h3>
 	     <p>
-	       <a href="/session">Creating a new session</a> results in an email with the subject line &quot;<strong>Your TeamWork.io session</strong>&quot; and an armored text attachment.
+	       Instead of relying on passwords, which can be easily stolen, broken, or forgotten, login sessions are based on encryption challenges.
 	     </p>
 	     <p>
-	       Decrypting the attached message results in a list of six random words, which need to be copied into the <a href="/confirm">session confirmation form</a> to take effect.
+	       <a href="/session">Logging in (a.k.a. creating a new session)</a> sends an email to your address with the subject line &quot;<strong>Your TeamWork.io session</strong>&quot; and an armored text attachment.
+	     </p>
+	     <p>
+	       Decrypting the attached message results in a list of six random words, which need to be copied into the <a href="/confirm">login (a.k.a. session confirmation) form</a> to take effect.
+	     </p>
+	     <p>
+	       Only the private key holder can decrypt the attachment (which is why private keys should <strong><i>never</i></strong> be shared with anyone).
 	     </p>
 	     <p>
 	       Use the <a href="https://gnupg.org/gph/en/manual/r669.html" target="_blank">gpg --decrypt</a> command, as in this example (the trailing awk statement just adds a few carriage returns so that the decryption result can be read more easily):
@@ -136,6 +142,9 @@ versifies resume's wees portentously mollify Shasta's</pre>
 	     <p>
 	       are the words to copy into the <a href="/confirm">session confirmation form</a>.
 	     </p>
+	     <p>
+	       Each login session lasts for thirty (30) minutes.
+	     </p>	     
 	   </div>
 	 </div>
 
