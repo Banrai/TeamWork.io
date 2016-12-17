@@ -77,10 +77,11 @@ $(function(){
     $('.chosen-select').chosen({width: '100%'});
     TEAMWORK.reset();
 
-    function searchForRecipient (email) {
+    function searchForRecipient (emailAddress) {
+	var email = emailAddress.trim().toLowerCase();
 	$('#recipient-search').show();
 	$.post("/searchPublicKeys",
-	       { email:     email.toLowerCase(),
+	       { email:     email,
 		 personId:  TEAMWORK.person,
 		 sessionId: TEAMWORK.session})
 	    .done(function(reply) {
