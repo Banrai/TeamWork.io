@@ -19,27 +19,26 @@
        <div class="col-xs-10 col-md-10">
 
 	 <!-- content (inner) -->
-	 
-	     <form method="post" action="/upload" enctype="multipart/form-data">
-	       {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
-	       {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
-	       <div class="row">
-		 <div class="col-xs-8 col-md-6 form-group">
-		   <label class="sr-only" for="userEmail">Your email address</label>
-		   <div class="input-group">
-		     <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
-		     {{if .Person.Email}}
-		     <p class="form-control-static">{{.Person.Email}}</p>
-		     {{else}}
-		     <input type="text" class="form-control" id="userEmail" name="userEmail" placeholder="me@example.com">
-		     {{end}}
-		   </div>
-		 </div>
+	 <form method="post" action="/upload" enctype="multipart/form-data">
+	   {{if .Session.Id}}<input type="hidden" name="session" value="{{.Session.Id}}">{{end}}
+	   {{if .Person.Id}}<input type="hidden" name="person" value="{{.Person.Id}}">{{end}}
+	   <div class="row">
+	     <div class="col-xs-8 col-md-6 form-group">
+	       <label class="sr-only" for="userEmail">Email address</label>
+	       <div class="input-group">
+		 <div class="input-group-addon"><i class="fa fa-envelope-o" aria-hidden="true"></i></div>
+		 <input type="text" class="form-control" id="userEmail" name="userEmail" {{if .Person.Email}}value="{{.Person.Email}}"{{else}}placeholder="me@example.com"{{end}}>
 	       </div>
-	       <div class="form-group">
-		 <label class="sr-only" for="publicKey">Your public key file</label>
+	     </div>
+	   </div>
+	   
+	   <div class="radio">
+	     <label>
+	       <input type="radio" name="keyType" id="keyTypeUpload" value="upload" checked="checked"> Upload a file (in ASCII-armored format)
+	       <div class="form-group" id="key-upload">
+		 <label class="sr-only" for="publicKey">Public key file</label>
 		 <div class="input-group">
-		   <div class="input-group-addon"><i class="fa fa-key"></i></div>
+		   <div class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></div>
 		   <span class="btn btn-default btn-file">
 		     Public Key File <input type="file" class="form-control" id="publicKey" name="publicKey">
 		   </span>
@@ -47,18 +46,34 @@
 		 <div id="selectedFile" class="file-selected"></div>
 		 <p class="help-block">Need help? <a href="help.html#create-key" target="_blank">Here's how</a></p>
 	       </div>
-	       <div class="form-group">
-		 {{if .Session.Id}}{{else}}
-		 <div class="checkbox">
-		   <label>
-		     <input type="checkbox" id="createSession" name="createSession" checked="checked"> Create a new session using this key and email it to this address
-		   </label>
+	     </label>
+	   </div>
+	   
+	   <div class="radio">
+	     <label>
+	       <input type="radio" name="keyType" id="keyTypeURL" value="url"> Retrieve it from a URL
+	       <div class="form-group" id="key-url" style="display:none">
+		 <label class="sr-only" for="publicKeyUrl">Public key url</label>
+		 <div class="input-group">
+		   <div class="input-group-addon"><i class="fa fa-external-link" aria-hidden="true"></i></div>
+		   <input type="text" class="form-control" id="publicKeyUrl" name="publicKeyUrl">
 		 </div>
-		 {{end}}
-		 <button type="submit" class="btn btn-primary">Go <i class="fa fa-sign-in"></i></button>
+		 <p class="help-block">The link should point directly to an ASCII-armored text</p>
 	       </div>
-	     </form>
+	     </label>
+	   </div>
 
+	   <div class="form-group">
+	     {{if .Session.Id}}{{else}}
+	     <div class="checkbox">
+	       <label>
+		 <input type="checkbox" id="createSession" name="createSession" checked="checked"> Create a <a href="help.html#decrypt-session" target="_blank">login session</a> using this key
+	       </label>
+	     </div>
+	     {{end}}
+	     <button type="submit" class="btn btn-primary">Go <i class="fa fa-sign-in" aria-hidden="true"></i></button>
+	   </div>
+	 </form>	 
 	 <!-- /content (inner) -->
 
        </div>
