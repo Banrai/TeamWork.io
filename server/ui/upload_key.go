@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"github.com/Banrai/TeamWork.io/server/api"
 	"github.com/Banrai/TeamWork.io/server/cryptutil"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"github.com/Banrai/TeamWork.io/server/emailer"
@@ -29,113 +30,13 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 		p *database.PERSON
 	)
 	alert := new(Alert)
-	alert.Message = "Please use a public key file (in ASCII-armored format) which corresponds to this email"
+	alert.Message = "Please use a public key (in ASCII-armored format) which corresponds to this email"
 
 	if "POST" == r.Method {
 		r.ParseMultipartForm(16384)
 
 		fn := func(stmt map[string]*sql.Stmt) {
-			// attempt to read the uploaded public key file
-			pkFile, pkFileHeader, pkFileErr := r.FormFile("publicKey")
-			if pkFileErr != nil {
-				alert.AsError(INVALID_PK)
-				return
-			}
-			defer pkFile.Close()
-
-			buf := new(bytes.Buffer)
-			_, copyErr := io.Copy(buf, pkFile)
-			if copyErr != nil {
-				alert.AsError(INVALID_PK)
-				return
-			}
-
-			// make sure the uploaded public key is valid
-			uploadedKey := buf.String()
-			_, invalidKeyErr := cryptutil.DecodeArmoredKey(uploadedKey)
-			if invalidKeyErr != nil {
-				alert.AsError(INVALID_PK)
-				return
-			}
-
-			// sessionless: an email address posted in the form request
-			em, emExists := r.PostForm["userEmail"]
-			if emExists {
-				// an email address should have been provided
-				email := strings.ToLower(strings.Join(em, ""))
-				if len(email) == 0 {
-					alert.AsError(NO_EMAIL)
-					return
-				} else if !emailer.IsPossibleEmail(email) {
-					alert.AsError(INVALID_EMAIL)
-				} else {
-					// attempt to find the person for this email address
-					person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_EMAIL], email)
-					if personErr != nil {
-						alert.AsError(OTHER_ERROR)
-						return
-					}
-
-					if len(person.Id) == 0 {
-						// this is a new person
-						person.Email = email
-						personId, personAddErr := person.Add(stmt[database.PERSON_INSERT])
-						if personAddErr != nil {
-							alert.AsError(OTHER_ERROR)
-							return
-						}
-						person.Id = personId
-					}
-
-					// find all this person's public keys
-					publicKeys, publicKeysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
-					if publicKeysErr != nil {
-						alert.AsError(OTHER_ERROR)
-						return
-					}
-
-					// find out if this key already exists
-					alreadyExists := false
-					for _, priorKey := range publicKeys {
-						if uploadedKey == priorKey.Key {
-							alreadyExists = true
-							break
-						}
-					}
-
-					if !alreadyExists {
-						// now add this key to the database for this person
-						pkErr := AddPublicKey(person, uploadedKey, KEY_SOURCE, pkFileHeader.Filename, stmt[database.PK_INSERT])
-						if pkErr != nil {
-							alert.AsError(OTHER_ERROR)
-							return
-						}
-						// reload all the public keys to include the new one
-						publicKeys, publicKeysErr = person.LookupPublicKeys(stmt[database.PK_LOOKUP])
-						if publicKeysErr != nil {
-							alert.AsError(OTHER_ERROR)
-							return
-						}
-					}
-
-					_, createSessionExists := r.PostForm["createSession"]
-					if createSessionExists {
-						// create the session, and ask for confirmation of the decrypted code
-						sessionErr := CreateNewSession(person, publicKeys, stmt[database.SESSION_INSERT])
-						if sessionErr != nil {
-							alert.AsError(sessionErr.Error())
-							return
-						} else {
-							// present the session code form
-							Redirect("/confirm")(w, r)
-						}
-					} else {
-						alert.Message = template.HTML(fmt.Sprintf("The public key for \"%s\" was added successfully", email))
-					}
-				}
-			}
-
-			// versus a pre-existing session
+			// see if this is an in-session request
 			sessionCode, sessionCodeExists := r.PostForm["session"]
 			personCode, personCodeExists := r.PostForm["person"]
 			if sessionCodeExists && personCodeExists {
@@ -174,16 +75,150 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 					// session and person are established
 					s = session
 					p = person
+				}
+			}
 
+			// an email address should have been provided
+			em, emExists := r.PostForm["userEmail"]
+			if !emExists {
+				alert.AsError(NO_EMAIL)
+				return
+			}
+
+			// check its validity
+			email := strings.ToLower(strings.Join(em, ""))
+			if !emailer.IsPossibleEmail(email) {
+				alert.AsError(INVALID_EMAIL)
+				return
+			}
+
+			// attempt to find the person for this email address
+			person, personErr := database.LookupPerson(stmt[database.PERSON_LOOKUP_BY_EMAIL], email)
+			if personErr != nil {
+				alert.AsError(OTHER_ERROR)
+				return
+			}
+
+			if len(person.Id) == 0 {
+				// this is a new person
+				person.Email = email
+				personId, personAddErr := person.Add(stmt[database.PERSON_INSERT])
+				if personAddErr != nil {
+					alert.AsError(OTHER_ERROR)
+					return
+				}
+				person.Id = personId
+			}
+
+			// find all this person's public keys
+			publicKeys, publicKeysErr := person.LookupPublicKeys(stmt[database.PK_LOOKUP])
+			if publicKeysErr != nil {
+				alert.AsError(OTHER_ERROR)
+				return
+			}
+
+			// determine the public key source: file or url
+			kt, ktExists := r.PostForm["keyType"]
+			if !ktExists {
+				alert.AsError(api.INVALID_REQUEST)
+				return
+			}
+
+			keyType := strings.Join(kt, "")
+			if "upload" == keyType {
+				// attempt to read the uploaded public key file
+				pkFile, pkFileHeader, pkFileErr := r.FormFile("publicKey")
+				if pkFileErr != nil {
+					alert.AsError(INVALID_PK)
+					return
+				}
+				defer pkFile.Close()
+
+				buf := new(bytes.Buffer)
+				_, copyErr := io.Copy(buf, pkFile)
+				if copyErr != nil {
+					alert.AsError(INVALID_PK)
+					return
+				}
+
+				// make sure the uploaded public key is valid
+				uploadedKey := buf.String()
+				_, invalidKeyErr := cryptutil.DecodeArmoredKey(uploadedKey)
+				if invalidKeyErr != nil {
+					alert.AsError(INVALID_PK)
+					return
+				}
+
+				// find out if this key already exists
+				alreadyExists := false
+				for _, priorKey := range publicKeys {
+					if uploadedKey == priorKey.Key {
+						alreadyExists = true
+						break
+					}
+				}
+				if !alreadyExists {
 					// now add this key to the database for this person
 					pkErr := AddPublicKey(person, uploadedKey, KEY_SOURCE, pkFileHeader.Filename, stmt[database.PK_INSERT])
 					if pkErr != nil {
 						alert.AsError(OTHER_ERROR)
 						return
 					}
-
-					alert.Message = "Your public key was added successfully"
 				}
+			} else {
+				// source is a url
+				u, uExists := r.PostForm["url"]
+				if !uExists {
+					alert.AsError(api.INVALID_REQUEST)
+					return
+				}
+
+				url := strings.Join(u, "")
+				urlKey, urlKeyErr := api.URLFetch(url)
+				if urlKeyErr != nil {
+					alert.AsError(urlKeyErr.Error())
+					return
+				}
+
+				// make sure the fetched url resource is valid
+				_, invalidKeyErr := cryptutil.DecodeArmoredKey(urlKey)
+				if invalidKeyErr != nil {
+					alert.AsError(INVALID_PK)
+					return
+				}
+
+				// find out if this key already exists
+				alreadyExists := false
+				for _, priorKey := range publicKeys {
+					if urlKey == priorKey.Key {
+						alreadyExists = true
+						break
+					}
+				}
+
+				if !alreadyExists {
+					// now add this key to the database for this person
+					pkErr := AddPublicKey(person, urlKey, KEY_SOURCE, url, stmt[database.PK_INSERT])
+					if pkErr != nil {
+						alert.AsError(OTHER_ERROR)
+						return
+					}
+				}
+			}
+
+			_, createSessionExists := r.PostForm["createSession"]
+			if createSessionExists {
+				// create the session, and ask for confirmation of the decrypted code
+				sessionErr := CreateNewSession(person, publicKeys, stmt[database.SESSION_INSERT])
+				if sessionErr != nil {
+					alert.AsError(sessionErr.Error())
+					return
+				} else {
+					// present the session code form
+					Redirect("/confirm")(w, r)
+				}
+			} else {
+				alert.Message = template.HTML(fmt.Sprintf("The public key for \"%s\" was added successfully", email))
 			}
 		}
 
