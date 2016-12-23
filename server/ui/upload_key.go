@@ -167,7 +167,7 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 				}
 			} else {
 				// source is a url
-				u, uExists := r.PostForm["url"]
+				u, uExists := r.PostForm["publicKeyUrl"]
 				if !uExists {
 					alert.AsError(api.INVALID_REQUEST)
 					return
