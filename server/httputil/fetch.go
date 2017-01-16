@@ -12,18 +12,29 @@ import (
 	"net/http"
 )
 
+const USER_AGENT = "TeamWork.io/0.2"
+
 // For accessing URLs via HTTP GET
 func getUrl(url string) ([]byte, error) {
 	noData := []byte{} // default, in case of error
 
-	response, respErr := http.Get(url)
+	client := &http.Client{}
+	request, requestErr := http.NewRequest("GET", url, nil)
+	if requestErr != nil {
+		return noData, requestErr
+	}
+
+	request.Header.Set("User-Agent", USER_AGENT)
+
+	response, respErr := client.Do(request)
 	if respErr != nil {
 		return noData, respErr
 	}
+	defer response.Body.Close()
+
 	if response.StatusCode != http.StatusOK {
 		return noData, errors.New(fmt.Sprintf("Error retrieving '%s' via HTTP GET: %s", url, response.Status))
 	}
-	defer response.Body.Close()
 
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
