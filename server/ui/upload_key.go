@@ -11,6 +11,7 @@ import (
 	"github.com/Banrai/TeamWork.io/server/cryptutil"
 	"github.com/Banrai/TeamWork.io/server/database"
 	"github.com/Banrai/TeamWork.io/server/emailer"
+	"github.com/Banrai/TeamWork.io/server/httputil"
 	"html/template"
 	"io"
 	"net/http"
@@ -174,7 +175,7 @@ func UploadKey(w http.ResponseWriter, r *http.Request, db database.DBConnection,
 				}
 
 				url := strings.Join(u, "")
-				urlKey, urlKeyErr := api.URLFetch(url)
+				urlKey, urlKeyErr := httputil.URLFetchAsString(url)
 				if urlKeyErr != nil {
 					alert.AsError(urlKeyErr.Error())
 					return

@@ -4,13 +4,11 @@
 package keyservers
 
 import (
-	"bytes"
 	"encoding/xml"
 	"fmt"
+	"github.com/Banrai/TeamWork.io/server/httputil"
 	"html"
 	"io"
-	"io/ioutil"
-	"net/http"
 	"strings"
 )
 
@@ -91,26 +89,13 @@ func parseMatchResult(in io.Reader) ([]string, error) {
 	return results, nil
 }
 
-// fetch the contents of the given url using http get, and return the
-// contents as an io.Reader object
-func getLinkContents(url string) (io.Reader, error) {
-	response, respErr := http.Get(url)
-	if respErr != nil {
-		return nil, respErr
-	}
-	defer response.Body.Close()
-
-	contents, err := ioutil.ReadAll(response.Body)
-	return bytes.NewReader(contents), err
-}
-
 // search the MIT PGP Server for all public keys corresponding to this
 // email address, returning them as armored strings, excluding revoked/not
 // verified keys
 func MITSearch(email string) ([]string, error) {
 	var keys []string
 
-	in, inErr := getLinkContents(fmt.Sprintf("http://pgp.mit.edu/pks/lookup?search=%s", email))
+	in, inErr := httputil.URLFetchAsReader(fmt.Sprintf("http://pgp.mit.edu/pks/lookup?search=%s", email))
 	if inErr != nil {
 		return keys, inErr
 	}
@@ -121,7 +106,7 @@ func MITSearch(email string) ([]string, error) {
 	}
 
 	for _, link := range links {
-		pkIn, pkInErr := getLinkContents(fmt.Sprintf("http://pgp.mit.edu%s", link))
+		pkIn, pkInErr := httputil.URLFetchAsReader(fmt.Sprintf("http://pgp.mit.edu%s", link))
 		if pkInErr != nil {
 			return keys, pkInErr
 		}
